@@ -25,7 +25,7 @@ module top (
 
     // ******************************** PIPELINE REGISTERS ******************************
 
-    reg [63:0] IF_ID; 
+    reg [31:0] IF_ID; 
     reg [149:0] ID_EX; 
     reg [140:0] EX_MEM; 
     reg [135:0] MEM_WB; 
@@ -34,11 +34,9 @@ module top (
                
     // =============================== INSTRUCTION FETCH ================================
 
-    wire [31:0] IF_instruction;
     reg [31:0] IF_pc;
 
     assign addra = IF_pc;
-    assign IF_instruction = doa;
 
     // =============================== INSTRUCTION DECODE ===============================
 
@@ -50,8 +48,9 @@ module top (
     wire [19:15] ID_rs1;
     wire [24:20] ID_rs2;
     wire [31:25] ID_funct7;
-    
-    assign {ID_PC, ID_instruction} = IF_ID;
+
+    assign ID_instruction = doa;
+    assign ID_pc = IF_ID;
     assign ID_opcode = ID_instruction[6:0];
     assign ID_rd = ID_instruction[11:7];
     assign ID_funct3 = ID_instruction[14:12];
@@ -252,7 +251,7 @@ module top (
         else begin
 
             IF_pc <= next_pc; 
-            IF_ID <= {IF_pc,IF_instruction};
+            IF_ID <= IF_pc;
             ID_EX <= {ID_pc, ID_funct3, ID_field, ID_ALUOp, ID_RegSrc, ID_ALUSrc, ID_RegWrite, ID_MemRead, ID_MemWrite, ID_Branch, ID_Jump, ID_rs1_data, ID_rs2_data, ID_eximm, ID_rd};
             EX_MEM <= {EX_pc, EX_pc_eximm, EX_funct3, EX_RegSrc, EX_RegWrite, EX_MemRead, EX_MemWrite, EX_rs2_data, EX_ALU_result, EX_rd};
             MEM_WB <= {MEM_pc, MEM_pc_eximm, MEM_RegSrc, MEM_RegWrite, MEM_ALU_result, MEM_DMEM_result, MEM_rd};
