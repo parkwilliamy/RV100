@@ -27,8 +27,7 @@ module top (
 
     reg [31:0] IF_ID; 
     reg [149:0] ID_EX; 
-    reg [140:0] EX_MEM; 
-    reg [135:0] MEM_WB; 
+    reg [107:0] EX_MEM; 
 
     // *********************************** MODULES **************************************
                
@@ -66,9 +65,9 @@ module top (
     wire [31:0] ID_rs1_data;
     wire [31:0] ID_rs2_data;
 
-    wire WB_RegWrite;
-    wire [4:0] WB_rd;
-    reg [31:0] WB_rd_write_data;
+    wire MEM_RegWrite;
+    wire [4:0] MEM_rd;
+    reg [31:0] MEM_rd_write_data;
 
     ControlUnit INST2 (
         .opcode(ID_opcode), 
@@ -84,11 +83,11 @@ module top (
 
     RegFile INST3 (
         .clk(clk), 
-        .RegWrite(WB_RegWrite), 
+        .RegWrite(MEM_RegWrite), 
         .rs1(ID_rs1), 
         .rs2(ID_rs2), 
-        .rd(WB_rd), 
-        .rd_write_data(WB_rd_write_data), 
+        .rd(MEM_rd), 
+        .rd_write_data(MEM_rd_write_data), 
         .rs1_data(ID_rs1_data), 
         .rs2_data(ID_rs2_data)
     );
@@ -181,12 +180,10 @@ module top (
     wire [31:0] MEM_pc;
     wire [2:0] MEM_funct3;
     wire [1:0] MEM_RegSrc; 
-    wire MEM_RegWrite, MEM_MemRead, MEM_MemWrite;
+    wire MEM_MemRead;
     
     wire [31:0] MEM_pc_eximm;
-    wire [31:0 ]MEM_rs2_data;
     wire [31:0] MEM_ALU_result;
-    wire [4:0] MEM_rd;
 
     assign {
         MEM_pc,
@@ -194,9 +191,7 @@ module top (
         MEM_funct3, 
         MEM_RegSrc, 
         MEM_RegWrite, 
-        MEM_MemRead, 
-        MEM_MemWrite, 
-        MEM_rs2_data,
+        MEM_MemRead,  
         MEM_ALU_result,
         MEM_rd
     } = EX_MEM;
@@ -211,30 +206,13 @@ module top (
         .addrb(addrb),
         .DMEM_word(dob), // data at nearest word aligned address near a given byte address
         .rs2_data(EX_rs2_data),
-        .funct3(MEM_funct3),
+        .EX_funct3(EX_funct3),
+        .MEM_funct3(MEM_funct3),
         .web(web),
         .dib(dib),
         .DMEM_result(MEM_DMEM_result)
     );
 
-
-    // =============================== REGFILE WRITE BACK ===============================
-
-    wire [31:0] WB_pc;
-    wire [31:0] WB_pc_eximm;
-    wire [1:0] WB_RegSrc;
-    wire [31:0] WB_ALU_result;
-    wire [31:0] WB_DMEM_result;
-
-    assign {
-        WB_pc,
-        WB_pc_eximm,
-        WB_RegSrc,
-        WB_RegWrite,
-        WB_ALU_result,
-        WB_DMEM_result, // not all of the word is used for non LW instructions
-        WB_rd
-    } = MEM_WB;
 
     reg [31:0] next_pc;
 
@@ -245,7 +223,6 @@ module top (
             IF_ID <= 0;
             ID_EX <= 0;
             EX_MEM <= 0;
-            MEM_WB <= 0;
         end
 
         else begin
@@ -253,9 +230,8 @@ module top (
             IF_pc <= next_pc; 
             IF_ID <= IF_pc;
             ID_EX <= {ID_pc, ID_funct3, ID_field, ID_ALUOp, ID_RegSrc, ID_ALUSrc, ID_RegWrite, ID_MemRead, ID_MemWrite, ID_Branch, ID_Jump, ID_rs1_data, ID_rs2_data, ID_eximm, ID_rd};
-            EX_MEM <= {EX_pc, EX_pc_eximm, EX_funct3, EX_RegSrc, EX_RegWrite, EX_MemRead, EX_MemWrite, EX_rs2_data, EX_ALU_result, EX_rd};
-            MEM_WB <= {MEM_pc, MEM_pc_eximm, MEM_RegSrc, MEM_RegWrite, MEM_ALU_result, MEM_DMEM_result, MEM_rd};
-
+            EX_MEM <= {EX_pc, EX_pc_eximm, EX_funct3, EX_RegSrc, EX_RegWrite, EX_MemRead, EX_ALU_result, EX_rd};
+           
         end
 
     end
@@ -280,12 +256,12 @@ module top (
 
     always @ (*) begin
 
-        case (WB_RegSrc) 
+        case (MEM_RegSrc) 
 
-            0: WB_rd_write_data = WB_ALU_result;
-            1: WB_rd_write_data = WB_DMEM_result;
-            2: WB_rd_write_data = WB_pc_eximm;
-            3: WB_rd_write_data = WB_pc+4;
+            0: MEM_rd_write_data = MEM_ALU_result;
+            1: MEM_rd_write_data = MEM_DMEM_result;
+            2: MEM_rd_write_data = MEM_pc_eximm;
+            3: MEM_rd_write_data = MEM_pc+4;
 
         endcase
 

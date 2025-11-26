@@ -3,7 +3,7 @@
 module LSU (
     input MemWrite, MemRead,
     input [31:0] addrb, DMEM_word, rs2_data,
-    input [2:0] funct3,
+    input [2:0] EX_funct3, MEM_funct3,
     output reg [3:0] web,
     output reg [31:0] dib, DMEM_result
 );
@@ -21,7 +21,7 @@ module LSU (
 
         if (MemWrite) begin
 
-                case (funct3) 
+                case (EX_funct3) 
 
                     3'b000: begin // SB
                         
@@ -50,7 +50,7 @@ module LSU (
 
         else if (MemRead) begin
 
-            case (funct3) 
+            case (MEM_funct3) 
             
                 3'b000: DMEM_result = {{24{DMEM_shifted_word[7]}}, DMEM_shifted_word[7:0]}; // LB
                 3'b001: DMEM_result = {{16{DMEM_shifted_word[15]}}, DMEM_shifted_word[15:0]}; // LH
