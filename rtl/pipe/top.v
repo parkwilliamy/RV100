@@ -201,16 +201,16 @@ module top (
         MEM_rd
     } = EX_MEM;
 
-    assign addrb = MEM_ALU_result;
+    assign addrb = EX_ALU_result;
 
     reg [31:0] MEM_DMEM_result; // properly formatted data for load instructions
 
     LSU INST8 (
-        .MemWrite(MEM_MemWrite),
+        .MemWrite(EX_MemWrite),
         .MemRead(MEM_MemRead),
         .addrb(addrb),
         .DMEM_word(dob), // data at nearest word aligned address near a given byte address
-        .rs2_data(MEM_rs2_data),
+        .rs2_data(EX_rs2_data),
         .funct3(MEM_funct3),
         .web(web),
         .dib(dib),

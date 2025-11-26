@@ -17,6 +17,7 @@ module LSU (
     always @ (*) begin
 
         dib = 0;
+        web = 0;
 
         if (MemWrite) begin
 
