@@ -2,8 +2,10 @@
 
 module ControlUnit (
     input [6:0] opcode,
+    output reg [2:0] ValidReg,
     output reg [1:0] ALUOp, RegSrc,
     output reg ALUSrc, RegWrite, MemRead, MemWrite, Branch, Jump
+    // ValidReg: {rs2, rs1, rd} are valid registers
     // ALUOp: 0 -> decode regbit, funct3 and funct7 in ALUControl, 1 -> ADD, 2 -> SUB
     // RegSrc: 0 -> ALU result, 1 -> data memory, 2 -> pc-imm adder, 3 -> next instruction address (pc+4)
     // ALUSrc: 0 -> second operand is rs2, 1 -> second operand is sign extended immediate
@@ -36,12 +38,18 @@ module ControlUnit (
         MemWrite = 0;
         Branch = 0;
         Jump = 0;
+        ValidReg = 3'b111;
 
         case (opcode)
 
             // since default vals satisfy OP_R, there is no case for R-type instructions
 
-            OP_I: ALUSrc = 1;
+            OP_I: begin
+                
+                ALUSrc = 1;
+                ValidReg = 3'b011;
+
+            end
 
             OP_I_LD: begin
                 
@@ -49,6 +57,7 @@ module ControlUnit (
                 ALUSrc = 1;
                 MemRead = 1;
                 RegSrc = 1;
+                ValidReg = 3'b011;
                 
             end
 
@@ -57,10 +66,16 @@ module ControlUnit (
                 RegSrc = 3;
                 ALUSrc = 1;
                 Jump = 1;
+                ValidReg = 3'b011;
 
             end
         
-            OP_I_FENCE: RegWrite = 0;
+            OP_I_FENCE: begin
+
+                RegWrite = 0;
+                ValidReg = 3'b011;
+
+            end
 
             OP_S: begin
 
@@ -68,19 +83,31 @@ module ControlUnit (
                 ALUSrc = 1;
                 RegWrite = 0;
                 MemWrite = 1;
+                ValidReg = 3'b110;
                 
             end
 
             OP_U_LUI: begin
+
                 ALUOp = 1;
                 ALUSrc = 1;
+                ValidReg = 3'b001;
+
             end
 
-            OP_U_AUIPC: RegSrc = 2;
+            OP_U_AUIPC: begin
+                
+                RegSrc = 2;
+                ValidReg = 3'b001;
+
+            end
 
             OP_J: begin
+
                 RegSrc = 3;
                 Jump = 1;
+                ValidReg = 3'b001;
+
             end
 
             OP_B: begin
@@ -88,8 +115,16 @@ module ControlUnit (
                 ALUOp = 2;
                 RegWrite = 0;
                 Branch = 1;
+                ValidReg = 3'b110;
 
             end 
+
+            default: begin
+
+                RegWrite = 0;
+                ValidReg = 0;
+
+            end
             
         endcase
 

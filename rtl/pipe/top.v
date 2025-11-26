@@ -26,8 +26,9 @@ module top (
     // ******************************** PIPELINE REGISTERS ******************************
 
     reg [31:0] IF_ID; 
-    reg [149:0] ID_EX; 
-    reg [107:0] EX_MEM; 
+    reg [162:0] ID_EX; 
+    reg [112:0] EX_MEM; 
+    reg [66:0] MEM_WB;
 
     // *********************************** MODULES **************************************
                
@@ -57,6 +58,7 @@ module top (
     assign ID_rs2 = ID_instruction[24:20];
     assign ID_funct7 = ID_instruction[31:25];
 
+    wire [2:0] ID_ValidReg;
     wire [1:0] ID_ALUOp; // EX
     wire [1:0] ID_RegSrc; // WB
     wire ID_ALUSrc, ID_RegWrite, ID_MemRead, ID_MemWrite, ID_Branch, ID_Jump; // EX, WB, MEM, MEM, WB, MEM, MEM
@@ -71,6 +73,7 @@ module top (
 
     ControlUnit INST2 (
         .opcode(ID_opcode), 
+        .ValidReg(ID_ValidReg),
         .ALUOp(ID_ALUOp), 
         .RegSrc(ID_RegSrc), 
         .ALUSrc(ID_ALUSrc), 
@@ -111,6 +114,7 @@ module top (
     wire EX_zero, EX_sign, EX_overflow, EX_carry;
     
     wire [3:0] EX_field;
+    wire [2:0] EX_ValidReg;
     wire [2:0] EX_funct3;
     wire [1:0] EX_ALUOp; 
     wire [1:0] EX_RegSrc; 
@@ -119,15 +123,23 @@ module top (
     wire [31:0] EX_rs1_data;
     wire [31:0] EX_rs2_data;
     wire [31:0] EX_eximm;
+    wire [4:0] EX_rs1;
+    wire [4:0] EX_rs2;
     wire [4:0] EX_rd;
 
     wire [31:0] EX_op1;
     wire [31:0] EX_op2;
 
+    wire [31:0] EX_rs1_fwd_data, EX_rs2_fwd_data;
+
+    wire [31:0] EX_rs1_data_final;
+    wire [31:0] EX_rs2_data_final;
+
     assign {
         EX_pc,
         EX_funct3,
-        EX_field, 
+        EX_field,
+        EX_ValidReg, 
         EX_ALUOp, 
         EX_RegSrc, 
         EX_ALUSrc,
@@ -139,12 +151,14 @@ module top (
         EX_rs1_data,
         EX_rs2_data,
         EX_eximm,
-        EX_rd
+        EX_rd,
+        EX_rs1,
+        EX_rs2
     } = ID_EX;
 
 
-    assign EX_op1 = (EX_ALUOp == 1 && EX_ALUSrc == 1 && EX_RegSrc == 0 && EX_RegWrite == 1) ? 0 : EX_rs1_data;
-    assign EX_op2 = EX_ALUSrc ? EX_eximm : EX_rs2_data;
+    assign EX_op1 = (EX_ALUOp == 1 && EX_ALUSrc == 1 && EX_RegSrc == 0 && EX_RegWrite == 1) ? 0 : EX_rs1_data_final;
+    assign EX_op2 = EX_ALUSrc ? EX_eximm : EX_rs2_data_final;
     wire [31:0] EX_ALU_result;
 
     ALU INST6 (
@@ -170,51 +184,97 @@ module top (
         .branch_taken(EX_branch_taken)
     );
 
+    assign addrb = EX_ALU_result;
+    wire [1:0] EX_byte_offset;
+    assign EX_byte_offset = addrb % 4;
+
+    Store INST8 (
+        .MemWrite(EX_MemWrite),
+        .byte_offset(EX_byte_offset),
+        .rs2_data(EX_rs2_data_final),
+        .funct3(EX_funct3),
+        .web(web),
+        .dib(dib)
+    );
+
     wire [31:0] EX_pc_eximm;
     assign EX_pc_eximm = EX_pc + EX_eximm;
 
 
     // ================================== MEMORY WRITE ==================================
 
-
     wire [31:0] MEM_pc;
     wire [2:0] MEM_funct3;
+    wire [2:0] MEM_ValidReg;
     wire [1:0] MEM_RegSrc; 
     wire MEM_MemRead;
     
     wire [31:0] MEM_pc_eximm;
     wire [31:0] MEM_ALU_result;
+    wire [1:0] MEM_byte_offset;
 
     assign {
         MEM_pc,
         MEM_pc_eximm,
         MEM_funct3, 
+        MEM_ValidReg,
         MEM_RegSrc, 
         MEM_RegWrite, 
         MEM_MemRead,  
         MEM_ALU_result,
+        MEM_byte_offset,
         MEM_rd
     } = EX_MEM;
 
-    assign addrb = EX_ALU_result;
-
     reg [31:0] MEM_DMEM_result; // properly formatted data for load instructions
+    
 
-    LSU INST8 (
-        .MemWrite(EX_MemWrite),
+    Load INST9 (
         .MemRead(MEM_MemRead),
-        .addrb(addrb),
-        .DMEM_word(dob), // data at nearest word aligned address near a given byte address
-        .rs2_data(EX_rs2_data),
-        .EX_funct3(EX_funct3),
-        .MEM_funct3(MEM_funct3),
-        .web(web),
-        .dib(dib),
+        .byte_offset(MEM_byte_offset),
+        .DMEM_word(dob),
+        .funct3(MEM_funct3),
         .DMEM_result(MEM_DMEM_result)
     );
 
+    // =============================== REGFILE WRITE BACK ===============================
+
+    wire [2:0] WB_ValidReg;
+    wire [31:0] WB_rd_write_data;
+    wire [4:0] WB_rd;
+    
+    assign {
+        WB_ValidReg,
+        WB_rd_write_data,
+        WB_rd
+    } = MEM_WB;
 
     reg [31:0] next_pc;
+
+
+    // ================================== FORWARDING ====================================
+
+    wire EX_rs1_fwd, EX_rs2_fwd;
+
+    ForwardUnit INST10 (
+        .MEM_rd_write_data(MEM_rd_write_data),
+        .WB_rd_write_data(WB_rd_write_data),
+        .EX_rs1(EX_rs1), 
+        .EX_rs2(EX_rs2), 
+        .MEM_rd(MEM_rd), 
+        .WB_rd(WB_rd),
+        .EX_ValidReg(EX_ValidReg), 
+        .MEM_ValidReg(MEM_ValidReg), 
+        .WB_ValidReg(WB_ValidReg),
+        .rs1_fwd(EX_rs1_fwd), 
+        .rs2_fwd(EX_rs2_fwd),
+        .rs1_fwd_data(EX_rs1_fwd_data),
+        .rs2_fwd_data(EX_rs2_fwd_data)
+    );
+
+    assign EX_rs1_data_final = (EX_rs1_fwd) ? EX_rs1_fwd_data : EX_rs1_data;
+    assign EX_rs2_data_final = (EX_rs2_fwd) ? EX_rs2_fwd_data : EX_rs2_data;
+
 
     always @ (posedge clk or negedge rst_n) begin
 
@@ -223,15 +283,17 @@ module top (
             IF_ID <= 0;
             ID_EX <= 0;
             EX_MEM <= 0;
+            MEM_WB <= 0;
         end
 
         else begin
 
             IF_pc <= next_pc; 
             IF_ID <= IF_pc;
-            ID_EX <= {ID_pc, ID_funct3, ID_field, ID_ALUOp, ID_RegSrc, ID_ALUSrc, ID_RegWrite, ID_MemRead, ID_MemWrite, ID_Branch, ID_Jump, ID_rs1_data, ID_rs2_data, ID_eximm, ID_rd};
-            EX_MEM <= {EX_pc, EX_pc_eximm, EX_funct3, EX_RegSrc, EX_RegWrite, EX_MemRead, EX_ALU_result, EX_rd};
-           
+            ID_EX <= {ID_pc, ID_funct3, ID_field, ID_ValidReg, ID_ALUOp, ID_RegSrc, ID_ALUSrc, ID_RegWrite, ID_MemRead, ID_MemWrite, ID_Branch, ID_Jump, ID_rs1_data, ID_rs2_data, ID_eximm, ID_rd, ID_rs1, ID_rs2};
+            EX_MEM <= {EX_pc, EX_pc_eximm, EX_funct3, EX_ValidReg, EX_RegSrc, EX_RegWrite, EX_MemRead, EX_ALU_result, EX_byte_offset, EX_rd};
+            MEM_WB <= {MEM_ValidReg, MEM_rd_write_data, MEM_rd};
+
         end
 
     end
@@ -240,7 +302,7 @@ module top (
 
     // =============================== INSTRUCTION FETCH ================================
 
-    Fetch INST9 (
+    Fetch INST11 (
         .Branch(EX_Branch),
         .branch_taken(EX_branch_taken),
         .Jump(EX_Jump),
@@ -265,6 +327,6 @@ module top (
 
         endcase
 
-    end
+    end    
 
 endmodule
