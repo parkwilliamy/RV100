@@ -135,6 +135,8 @@ module top (
     wire [31:0] EX_rs1_data_final;
     wire [31:0] EX_rs2_data_final;
 
+    wire Stall;
+
     assign {
         EX_pc,
         EX_funct3,
@@ -154,7 +156,18 @@ module top (
         EX_rd,
         EX_rs1,
         EX_rs2
-    } = ID_EX;
+    } = {
+        ID_EX[162:121],
+        (Stall ? 0 : ID_EX[120:119]),
+        (Stall ? 0 : ID_EX[118:117]),
+        (Stall ? 0 : ID_EX[116]),
+        (Stall ? 0 : ID_EX[115]),
+        (Stall ? 0 : ID_EX[114]),
+        (Stall ? 0 : ID_EX[113]),
+        (Stall ? 0 : ID_EX[112]),
+        (Stall ? 0 : ID_EX[111]),
+        ID_EX[110:0]
+        };
 
 
     assign EX_op1 = (EX_ALUOp == 1 && EX_ALUSrc == 1 && EX_RegSrc == 0 && EX_RegWrite == 1) ? 0 : EX_rs1_data_final;
@@ -276,6 +289,17 @@ module top (
     assign EX_rs2_data_final = (EX_rs2_fwd) ? EX_rs2_fwd_data : EX_rs2_data;
 
 
+    // =================================== STALLING =====================================
+
+    StallUnit INST11 (
+        .EX_MemRead(EX_MemRead),
+        .EX_rd(EX_rd),
+        .ID_rs1(ID_rs1),
+        .ID_rs2(ID_rs2),
+        .ID_ValidReg(ID_ValidReg),
+        .Stall(Stall)
+    );
+
     always @ (posedge clk or negedge rst_n) begin
 
         if (!rst_n) begin
@@ -302,7 +326,7 @@ module top (
 
     // =============================== INSTRUCTION FETCH ================================
 
-    Fetch INST11 (
+    Fetch INST12 (
         .Branch(EX_Branch),
         .branch_taken(EX_branch_taken),
         .Jump(EX_Jump),
