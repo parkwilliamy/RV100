@@ -38,11 +38,12 @@ module ControlUnit (
         MemWrite = 0;
         Branch = 0;
         Jump = 0;
-        ValidReg = 3'b111;
 
         case (opcode)
 
             // since default vals satisfy OP_R, there is no case for R-type instructions
+
+            OP_R: ValidReg = 3'b111;
 
             OP_I: begin
                 
