@@ -27,8 +27,8 @@ module top (
 
     reg [31:0] IF_ID; 
     reg [162:0] ID_EX; 
-    reg [109:0] EX_MEM; 
-    reg [39:0] MEM_WB;
+    reg [145:0] EX_MEM; 
+    reg [109:0] MEM_WB;
 
     // *********************************** MODULES **************************************
                
@@ -38,15 +38,15 @@ module top (
     
     // =============================== INSTRUCTION DECODE ===============================
 
-    wire [31:0] ID_instruction;
-    wire [31:0] ID_pc;
+    wire [31:0] ID_instruction, ID_pc;
+
     wire [6:0] ID_opcode;
     wire [11:7] ID_rd;
     wire [14:12] ID_funct3;
     wire [19:15] ID_rs1;
     wire [24:20] ID_rs2;
     wire [31:25] ID_funct7;
-    wire Stall;
+    wire ID_Stall;
 
     assign ID_instruction = doa;
     assign ID_pc = IF_ID;
@@ -57,20 +57,17 @@ module top (
     assign ID_rs2 = ID_instruction[24:20];
     assign ID_funct7 = ID_instruction[31:25];
 
-    assign addra = Stall ? ID_pc : IF_pc;
+    assign addra = ID_Stall ? ID_pc : IF_pc;
 
     wire [2:0] ID_ValidReg;
-    wire [1:0] ID_ALUOp; // EX
-    wire [1:0] ID_RegSrc; // WB
+    wire [1:0] ID_ALUOp, ID_RegSrc; 
     wire ID_ALUSrc, ID_RegWrite, ID_MemRead, ID_MemWrite, ID_Branch, ID_Jump; // EX, WB, MEM, MEM, WB, MEM, MEM
     wire [3:0] ID_field;
-    wire [31:0] ID_eximm;
-    wire [31:0] ID_rs1_data;
-    wire [31:0] ID_rs2_data;
+    wire [31:0] ID_imm, ID_rs1_data, ID_rs2_data;
 
-    wire MEM_RegWrite;
-    wire [4:0] MEM_rd;
-    reg [31:0] MEM_rd_write_data;
+    wire WB_RegWrite;
+    wire [4:0] WB_rd;
+    reg [31:0] WB_rd_write_data;
 
     ControlUnit INST2 (
         .opcode(ID_opcode), 
@@ -87,18 +84,18 @@ module top (
 
     RegFile INST3 (
         .clk(clk), 
-        .RegWrite(MEM_RegWrite), 
+        .RegWrite(WB_RegWrite), 
         .rs1(ID_rs1), 
         .rs2(ID_rs2), 
-        .rd(MEM_rd), 
-        .rd_write_data(MEM_rd_write_data), 
+        .rd(WB_rd), 
+        .rd_write_data(WB_rd_write_data), 
         .rs1_data(ID_rs1_data), 
         .rs2_data(ID_rs2_data)
     );
 
     ImmGen INST4 (
         .instruction(ID_instruction), 
-        .eximm(ID_eximm)
+        .imm(ID_imm)
     );
 
     ALUControl INST5 (
@@ -115,26 +112,13 @@ module top (
     wire EX_zero, EX_sign, EX_overflow, EX_carry;
     
     wire [3:0] EX_field;
-    wire [2:0] EX_ValidReg;
-    wire [2:0] EX_funct3;
-    wire [1:0] EX_ALUOp; 
-    wire [1:0] EX_RegSrc; 
+    wire [2:0] EX_ValidReg, EX_funct3;
+    wire [1:0] EX_ALUOp, EX_RegSrc; 
     wire EX_ALUSrc, EX_RegWrite, EX_MemRead, EX_MemWrite, EX_Branch, EX_Jump;
-    wire [31:0] EX_pc;
-    wire [31:0] EX_rs1_data;
-    wire [31:0] EX_rs2_data;
-    wire [31:0] EX_eximm;
-    wire [4:0] EX_rs1;
-    wire [4:0] EX_rs2;
-    wire [4:0] EX_rd;
+    wire [31:0] EX_pc, EX_rs1_data, EX_rs2_data, EX_imm;
+    wire [4:0] EX_rs1, EX_rs2, EX_rd;
 
-    wire [31:0] EX_op1;
-    wire [31:0] EX_op2;
-
-    wire [31:0] EX_rs1_fwd_data, EX_rs2_fwd_data;
-
-    wire [31:0] EX_rs1_data_final;
-    wire [31:0] EX_rs2_data_final;
+    wire [31:0] EX_op1, EX_op2, EX_rs1_fwd_data, EX_rs2_fwd_data, EX_rs1_data_final, EX_rs2_data_final;
 
     assign {
         EX_pc,
@@ -151,14 +135,15 @@ module top (
         EX_Jump,
         EX_rs1_data,
         EX_rs2_data,
-        EX_eximm,
+        EX_imm,
         EX_rd,
         EX_rs1,
         EX_rs2
     } = ID_EX;
 
     assign EX_op1 = (EX_ALUOp == 1 && EX_ALUSrc == 1 && EX_RegSrc == 0 && EX_RegWrite == 1) ? 0 : EX_rs1_data_final;
-    assign EX_op2 = EX_ALUSrc ? EX_eximm : EX_rs2_data_final;
+    assign EX_op2 = EX_ALUSrc ? EX_imm : EX_rs2_data_final;
+
     wire [31:0] EX_ALU_result;
 
     ALU INST6 (
@@ -184,75 +169,95 @@ module top (
         .branch_taken(EX_branch_taken)
     );
 
-    wire [31:0] EX_pc_eximm;
-    assign EX_pc_eximm = EX_pc + EX_eximm;
-
-    assign addrb = EX_ALU_result;
-
-    Store INST8 (
-        .MemWrite(EX_MemWrite),
-        .addrb(EX_ALU_result),
-        .rs2_data(EX_rs2_data),
-        .funct3(EX_funct3),
-        .web(web),
-        .dib(dib)
-    );
+    wire [31:0] EX_pc_imm;
+    assign EX_pc_imm = EX_pc + EX_imm;
 
 
     // ================================== MEMORY WRITE ==================================
 
     wire [31:0] MEM_pc;
-    wire [2:0] MEM_funct3;
-    wire [2:0] MEM_ValidReg;
+    wire [2:0] MEM_funct3, MEM_ValidReg;
     wire [1:0] MEM_RegSrc; 
+    wire MEM_RegWrite;
     
-    wire [31:0] MEM_pc_eximm;
-    wire [31:0] MEM_ALU_result;
-
-    wire [31:0] MEM_DMEM_result; // properly formatted data for load instructions
+    wire [31:0] MEM_pc_imm, MEM_ALU_result, MEM_rs2_data;
+    wire [4:0] MEM_rd;
 
     assign {
         MEM_pc,
-        MEM_pc_eximm,
+        MEM_pc_imm,
         MEM_funct3, 
         MEM_ValidReg,
         MEM_RegSrc, 
         MEM_RegWrite, 
+        MEM_MemRead,
+        MEM_MemWrite,
         MEM_ALU_result,
+        MEM_rs2_data,
         MEM_rd
     } = EX_MEM;
 
-    Load INST9 (
+    assign addrb = MEM_ALU_result;
+
+    Store INST8 (
+        .MemWrite(MEM_MemWrite),
         .addrb(MEM_ALU_result),
+        .rs2_data(MEM_rs2_data),
         .funct3(MEM_funct3),
-        .DMEM_word(dob),
-        .DMEM_result(MEM_DMEM_result)
+        .web(web),
+        .dib(dib)
     );
 
 
     // =============================== REGFILE WRITE BACK ===============================
 
-    wire [2:0] WB_ValidReg;
-    wire [31:0] WB_rd_write_data;
-    wire [4:0] WB_rd;
+    wire [31:0] WB_pc_imm, WB_pc, WB_ALU_result;
+    wire [2:0] WB_funct3, WB_ValidReg;
+    wire [1:0] WB_RegSrc; 
     
     assign {
+        WB_pc,
+        WB_pc_imm,
+        WB_funct3,
         WB_ValidReg,
-        WB_rd_write_data,
+        WB_RegSrc,
+        WB_RegWrite,
+        WB_ALU_result,
         WB_rd
     } = MEM_WB;
 
     wire [31:0] next_pc;
+
+    WriteBack INST9 (
+        .ALU_result(WB_ALU_result), 
+        .pc_imm(WB_pc_imm), 
+        .pc(WB_pc),
+        .funct3(WB_funct3),
+        .RegSrc(WB_RegSrc),
+        .DMEM_word(dob),
+        .rd_write_data(WB_rd_write_data)
+    );
+
+    Fetch INST10 (
+        .Branch(EX_Branch),
+        .branch_taken(EX_branch_taken),
+        .Jump(EX_Jump),
+        .ALUSrc(EX_ALUSrc),
+        .pc(IF_pc),
+        .imm(EX_imm),
+        .rs1_data(EX_rs1_data),
+        .next_pc(next_pc)
+    );
 
 
     // ================================== FORWARDING ====================================
 
     wire EX_rs1_fwd, EX_rs2_fwd;
 
-    ForwardUnit INST10 (
+    ForwardUnit INST11 (
         .MEM_ALU_result(MEM_ALU_result),
         .MEM_pc(MEM_pc),
-        .MEM_pc_eximm(MEM_pc_eximm),
+        .MEM_pc_imm(MEM_pc_imm),
         .MEM_RegSrc(MEM_RegSrc),
         .WB_rd_write_data(WB_rd_write_data),
         .EX_rs1(EX_rs1), 
@@ -274,13 +279,13 @@ module top (
 
     // =================================== STALLING =====================================
 
-    StallUnit INST11 (
+    StallUnit INST12 (
         .EX_MemRead(EX_MemRead),
         .EX_rd(EX_rd),
         .ID_rs1(ID_rs1),
         .ID_rs2(ID_rs2),
         .ID_ValidReg(ID_ValidReg),
-        .Stall(Stall)
+        .Stall(ID_Stall)
     );
 
     always @ (posedge clk or negedge rst_n) begin
@@ -295,59 +300,26 @@ module top (
 
         else begin
             
-            if (Stall) begin
+            if (ID_Stall) begin
 
                 IF_pc <= IF_pc;
                 IF_ID <= IF_ID;
-                ID_EX <= {EX_pc, 3'b000, 4'b0000, 3'b000, 2'b00, 2'b00, 1'b0, 1'b0, 1'b0, 1'b0, 1'b0, 1'b0, EX_rs1_data, EX_rs2_data, EX_eximm, EX_rd, EX_rs1, EX_rs2};
-                EX_MEM <= {EX_pc, EX_pc_eximm, EX_funct3, EX_ValidReg, EX_RegSrc, EX_RegWrite, EX_ALU_result, EX_rd};
-                MEM_WB <= {MEM_ValidReg, MEM_rd_write_data, MEM_rd};
+                ID_EX <= {EX_pc, 3'b000, 4'b0000, 3'b000, 2'b00, 2'b00, 1'b0, 1'b0, 1'b0, 1'b0, 1'b0, 1'b0, EX_rs1_data, EX_rs2_data, EX_imm, EX_rd, EX_rs1, EX_rs2};
+                EX_MEM <= {EX_pc, EX_pc_imm, EX_funct3, EX_ValidReg, EX_RegSrc, EX_RegWrite, EX_MemRead, EX_MemWrite, EX_ALU_result, EX_rs2_data, EX_rd};
+                MEM_WB <= {MEM_pc, MEM_pc_imm, MEM_funct3, MEM_ValidReg, MEM_RegSrc, MEM_RegWrite, MEM_ALU_result, MEM_rd};
 
             end else begin
             
             IF_pc <= next_pc; 
             IF_ID <= IF_pc;
-            ID_EX <= {ID_pc, ID_funct3, ID_field, ID_ValidReg, ID_ALUOp, ID_RegSrc, ID_ALUSrc, ID_RegWrite, ID_MemRead, ID_MemWrite, ID_Branch, ID_Jump, ID_rs1_data, ID_rs2_data, ID_eximm, ID_rd, ID_rs1, ID_rs2};
-            EX_MEM <= {EX_pc, EX_pc_eximm, EX_funct3, EX_ValidReg, EX_RegSrc, EX_RegWrite, EX_ALU_result, EX_rd};
-            MEM_WB <= {MEM_ValidReg, MEM_rd_write_data, MEM_rd};
+            ID_EX <= {ID_pc, ID_funct3, ID_field, ID_ValidReg, ID_ALUOp, ID_RegSrc, ID_ALUSrc, ID_RegWrite, ID_MemRead, ID_MemWrite, ID_Branch, ID_Jump, ID_rs1_data, ID_rs2_data, ID_imm, ID_rd, ID_rs1, ID_rs2};
+            EX_MEM <= {EX_pc, EX_pc_imm, EX_funct3, EX_ValidReg, EX_RegSrc, EX_RegWrite, EX_MemRead, EX_MemWrite, EX_ALU_result, EX_rs2_data, EX_rd};
+            MEM_WB <= {MEM_pc, MEM_pc_imm, MEM_funct3, MEM_ValidReg, MEM_RegSrc, MEM_RegWrite, MEM_ALU_result, MEM_rd};
 
             end
 
         end
 
     end
-
-    // ***************************** COMBINATIONAL LOGIC ********************************
-
-    // =============================== INSTRUCTION FETCH ================================
-
-    Fetch INST12 (
-        .Branch(EX_Branch),
-        .branch_taken(EX_branch_taken),
-        .Jump(EX_Jump),
-        .ALUSrc(EX_ALUSrc),
-        .pc(IF_pc),
-        .eximm(EX_eximm),
-        .rs1_data(EX_rs1_data),
-        .next_pc(next_pc)
-    );
-
-
-    // =============================== REGFILE WRITE BACK ===============================
-
-    always @ (*) begin
-
-        case (MEM_RegSrc) 
-
-            0: MEM_rd_write_data = MEM_ALU_result;
-            1: MEM_rd_write_data = MEM_DMEM_result;
-            2: MEM_rd_write_data = MEM_pc_eximm;
-            3: MEM_rd_write_data = MEM_pc+4;
-
-        endcase
-
-    end    
-
-    // TODO: PUT MUXES OR SMTH ON THE INPUT SO ONLY REG VALUES ARE FORWARDED AND DECISIONS MADE AFTER
 
 endmodule
