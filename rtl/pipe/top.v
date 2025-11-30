@@ -26,9 +26,9 @@ module top (
     // ******************************** PIPELINE REGISTERS ******************************
 
     reg [31:0] IF_ID; 
-    reg [162:0] ID_EX; 
-    reg [182:0] EX_MEM; 
-    reg [109:0] MEM_WB;
+    reg [194:0] ID_EX; 
+    reg [148:0] EX_MEM; 
+    reg [110:0] MEM_WB;
 
     // *********************************** MODULES **************************************
                
@@ -346,11 +346,11 @@ module top (
 
             end else begin
             
-            IF_pc <= next_pc; 
-            IF_ID <= IF_pc;
-            ID_EX <= {ID_pc, ID_pc_imm, ID_funct3, ID_field, ID_ValidReg, ID_ALUOp, ID_RegSrc, ID_ALUSrc, ID_RegWrite, ID_MemRead, ID_MemWrite, ID_Branch, ID_Jump, ID_rs1_data, ID_rs2_data, ID_imm, ID_rd, ID_rs1, ID_rs2};
-            EX_MEM <= {EX_pc, EX_pc_imm, EX_funct3, EX_ValidReg, EX_RegSrc, EX_RegWrite, EX_MemRead, EX_MemWrite, EX_ALU_result, EX_rs2_data, EX_rs2, EX_rd};
-            MEM_WB <= {MEM_pc, MEM_pc_imm, MEM_funct3, MEM_ValidReg, MEM_RegSrc, MEM_MemRead, MEM_RegWrite, MEM_ALU_result, MEM_rd};
+                IF_pc <= next_pc; 
+                IF_ID <= IF_pc;
+                ID_EX <= {ID_pc, ID_pc_imm, ID_funct3, ID_field, ID_ValidReg, ID_ALUOp, ID_RegSrc, ID_ALUSrc, ID_RegWrite, ID_MemRead, ID_MemWrite, ID_Branch, ID_Jump, ID_rs1_data, ID_rs2_data, ID_imm, ID_rd, ID_rs1, ID_rs2};
+                EX_MEM <= {EX_pc, EX_pc_imm, EX_funct3, EX_ValidReg, EX_RegSrc, EX_RegWrite, EX_MemRead, EX_MemWrite, EX_ALU_result, EX_rs2_data, EX_rs2, EX_rd};
+                MEM_WB <= {MEM_pc, MEM_pc_imm, MEM_funct3, MEM_ValidReg, MEM_RegSrc, MEM_MemRead, MEM_RegWrite, MEM_ALU_result, MEM_rd};
 
             end
 
