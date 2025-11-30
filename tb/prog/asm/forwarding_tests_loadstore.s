@@ -28,7 +28,8 @@ my_data:
     .word 0                 # reserve 4 bytes for x6
     .hword 0                # reserve 2 bytes for x7
     .hword 0                # reserve 2 bytes for x8
-    .word 0                 # reserve 4 bytes of x11
+    .word 0                 # reserve 4 bytes for x11
+    .hword 0                # reserve 2 bytes for x13
 
 
 
