@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
 
 module ForwardUnit (
-    input [31:0] MEM_ALU_result, MEM_pc, MEM_pc_imm, WB_rd_write_data,
+    input [31:0] MEM_ALU_result, MEM_pc_4, MEM_pc_imm, WB_rd_write_data,
     input [1:0] MEM_RegSrc,
     input [4:0] EX_rs1, EX_rs2, MEM_rs2, MEM_rd, WB_rd,
     input [2:0] EX_ValidReg, MEM_ValidReg, WB_ValidReg,
@@ -29,7 +29,7 @@ module ForwardUnit (
 
             0: MEM_rd_write_data = MEM_ALU_result;
             2: MEM_rd_write_data = MEM_pc_imm;
-            3: MEM_rd_write_data = MEM_pc+4;
+            3: MEM_rd_write_data = MEM_pc_4;
 
         endcase
 

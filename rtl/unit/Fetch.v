@@ -3,16 +3,19 @@
 module Fetch(
     input [1:0] ID_branch_prediction, prediction_status, 
     input ID_Branch, EX_Branch, ID_Jump, EX_Jump, ID_ALUSrc, EX_ALUSrc,
-    input [31:0] IF_pc, EX_pc, ID_pc_imm, EX_pc_imm, rs1_imm,
+    input [31:0] IF_pc, EX_pc_4, ID_pc_imm, EX_pc_imm, rs1_imm,
+    output [31:0] IF_pc_4,
     output reg [31:0] next_pc,
     output reg ID_Flush, EX_Flush
 );
+
+    assign IF_pc_4 = IF_pc+4;
 
     always @ (*) begin
 
         ID_Flush = 0;
         EX_Flush = 0;
-        next_pc = IF_pc+4;
+        next_pc = IF_pc_4;
 
         if (ID_Branch) begin
 
@@ -47,7 +50,7 @@ module Fetch(
 
                 1: begin
 
-                    next_pc = EX_pc+4;
+                    next_pc = EX_pc_4;
                     ID_Flush = 1;
 
                 end

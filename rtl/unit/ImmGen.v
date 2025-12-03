@@ -30,7 +30,7 @@ module ImmGen (
         opcode = instruction[6:0];
         funct3 = instruction[14:12]; // used for I-type instructions
 
-        case(opcode)
+        case (opcode)
 
             OP_I, OP_I_LD, OP_I_FENCE, OP_I_JALR: begin
                 intimm1 = (opcode == OP_I && (funct3 == 3'b001 || funct3 == 3'b101)) ? {7'b0000000, instruction[24:20]} : instruction[31:20];

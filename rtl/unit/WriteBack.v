@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
 
 module WriteBack (
-    input [31:0] ALU_result, pc_imm, pc,
+    input [31:0] ALU_result, pc_imm, pc_4,
     input [2:0] funct3,
     input [1:0] RegSrc,
     input [31:0] DMEM_word,
@@ -33,7 +33,7 @@ module WriteBack (
             0: rd_write_data = ALU_result;
             1: rd_write_data = DMEM_result;
             2: rd_write_data = pc_imm;
-            3: rd_write_data = pc+4;
+            3: rd_write_data = pc_4;
 
         endcase
 
