@@ -187,9 +187,6 @@ module top (
         .prediction_status(EX_prediction_status)
     );
 
-    wire [31:0] EX_rs1_imm;
-    assign EX_rs1_imm = EX_rs1_data_final + EX_imm;
-
 
     // ================================== MEMORY WRITE ==================================
 
@@ -272,7 +269,7 @@ module top (
         .EX_pc(EX_pc),
         .ID_pc_imm(ID_pc_imm),
         .EX_pc_imm(EX_pc_imm),
-        .rs1_imm(EX_rs1_imm),
+        .rs1_imm(EX_ALU_result),
         .next_pc(next_pc),
         .ID_Flush(ID_Flush),
         .EX_Flush(EX_Flush)
