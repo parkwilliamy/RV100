@@ -2,11 +2,11 @@
 
 module BTB (
     input clk, rst_n, write, ID_Branch, ID_Jump,
-    input [31:0] IF2_pc, ID_pc,
+    input [31:0] IF1_pc, ID_pc,
     input [31:0] pc_imm_in,
     output reg [31:0] pc_imm_out,
     output hit,
-    output reg IF2_Branch, IF2_Jump
+    output reg IF1_Branch, IF1_Jump
 );
 
     // 2-way set associative cache
@@ -22,8 +22,8 @@ module BTB (
     wire [SET_ID_WIDTH-1:0] IF2_set_id, ID_set_id;
     wire [4:0] IF2_line_id1, IF2_line_id2, ID_line_id1, ID_line_id2;
 
-    assign IF2_tag = IF2_pc[31:6];
-    assign IF2_set_id = IF2_pc[5:2];
+    assign IF2_tag = IF1_pc[31:6];
+    assign IF2_set_id = IF1_pc[5:2];
     assign IF2_line_id1 = IF2_set_id*LINES_PER_SET;
     assign IF2_line_id2 = IF2_line_id1+1;
 
@@ -36,9 +36,9 @@ module BTB (
     // For Valid bit, 1 means the pc_imm value is valid
     // For FIFO bit, 1 means the line came in first
 
-    wire IF2_branch1, IF2_branch2, IF2_valid1, IF2_valid2, IF2_fifo1, IF2_fifo2;
-    assign IF2_branch1 = branch_target_buffer[IF2_line_id1][2];
-    assign IF2_branch2 = branch_target_buffer[IF2_line_id2][2];
+    wire IF1_Branch1, IF1_Branch2, IF2_valid1, IF2_valid2, IF2_fifo1, IF2_fifo2;
+    assign IF1_Branch1 = branch_target_buffer[IF2_line_id1][2];
+    assign IF1_Branch2 = branch_target_buffer[IF2_line_id2][2];
     assign IF2_valid1 = branch_target_buffer[IF2_line_id1][1];
     assign IF2_valid2 = branch_target_buffer[IF2_line_id2][1];
     assign IF2_fifo1 = branch_target_buffer[IF2_line_id1][0];
@@ -69,24 +69,24 @@ module BTB (
 
     always @ (*) begin
 
-        IF2_Branch = 0;
-        IF2_Jump = 0;
+        IF1_Branch = 0;
+        IF1_Jump = 0;
         pc_imm_out = 0;
 
         // if tag matches and valid bit is 1
         if (IF2_tag1 == IF2_tag && IF2_valid1) begin
             
-            if (!IF2_branch1) begin
+            if (!IF1_Branch1) begin
 
-                IF2_Branch = 0;
-                IF2_Jump = 1;
+                IF1_Branch = 0;
+                IF1_Jump = 1;
 
             end
 
             else begin
 
-                IF2_Branch = 1;
-                IF2_Jump = 0;
+                IF1_Branch = 1;
+                IF1_Jump = 0;
 
             end
 
@@ -96,17 +96,17 @@ module BTB (
 
         if (IF2_tag2 == IF2_tag && IF2_valid2) begin
             
-            if (!IF2_branch2) begin
+            if (!IF1_Branch2) begin
 
-                IF2_Branch = 0;
-                IF2_Jump = 1;
+                IF1_Branch = 0;
+                IF1_Jump = 1;
 
             end
 
             else begin
 
-                IF2_Branch = 1;
-                IF2_Jump = 0;
+                IF1_Branch = 1;
+                IF1_Jump = 0;
 
             end
 

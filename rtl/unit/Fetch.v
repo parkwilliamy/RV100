@@ -1,9 +1,9 @@
 `timescale 1ns/1ps
 
 module Fetch(
-    input [1:0] IF2_branch_prediction, ID_branch_prediction, prediction_status, 
-    input IF2_BTBhit, ID_BTBhit, IF2_Branch, IF2_Jump, ID_Branch, EX_Branch, ID_Jump, EX_Jump, ID_ALUSrc, EX_ALUSrc,
-    input [31:0] IF1_pc, IF2_pc_imm, EX_pc_4, ID_pc_imm, EX_pc_imm, rs1_imm,
+    input [1:0] IF1_branch_prediction, ID_branch_prediction, prediction_status, 
+    input IF1_BTBhit, ID_BTBhit, IF1_Branch, IF1_Jump, ID_Branch, EX_Branch, ID_Jump, EX_Jump, ID_ALUSrc, EX_ALUSrc,
+    input [31:0] IF1_pc, IF1_pc_imm, EX_pc_4, ID_pc_imm, EX_pc_imm, rs1_imm,
     output [31:0] IF1_pc_4,
     output reg [31:0] next_pc,
     output reg IF2_Flush, ID_Flush, EX_Flush
@@ -18,15 +18,15 @@ module Fetch(
         EX_Flush = 0;
         next_pc = IF1_pc_4;
 
-        if (IF2_BTBhit) begin
+        if (IF1_BTBhit) begin
 
-            if (IF2_Branch) begin
+            if (IF1_Branch) begin
 
-                if (IF2_branch_prediction == 2'b10 || IF2_branch_prediction == 2'b11) next_pc = IF2_pc_imm;
+                if (IF1_branch_prediction == 2'b10 || IF1_branch_prediction == 2'b11) next_pc = IF1_pc_imm;
 
             end
 
-            else if (IF2_Jump) next_pc = IF2_pc_imm;
+            else if (IF1_Jump) next_pc = IF1_pc_imm;
             
         end
 
