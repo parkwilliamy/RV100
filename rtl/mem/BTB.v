@@ -1,12 +1,21 @@
 `timescale 1ns/1ps
 
 module BTB (
+<<<<<<< HEAD
     input clk, rst_n, write, ID_Branch, ID_Jump,
     input [31:0] IF1_pc, ID_pc,
     input [31:0] pc_imm_in,
     output reg [31:0] pc_imm_out,
     output hit,
     output reg IF1_Branch, IF1_Jump
+=======
+    input clk, rst_n, write, ID_Branch,
+    input [31:0] IF_pc, ID_pc,
+    input [31:0] pc_imm_in,
+    output reg [31:0] pc_imm_out,
+    output hit,
+    output reg IF_Branch, IF_Jump
+>>>>>>> parent of 412c687 (Merge branch 'pipelined' into pipelined_synth)
 );
 
     // 2-way set associative cache
@@ -18,14 +27,21 @@ module BTB (
 
     reg [LINE_WIDTH-1:0] branch_target_buffer [NUM_OF_LINES-1:0]; // width = tag_bits + pc_imm + branch bit + valid bit + FIFO bit
 
-    wire [TAG_WIDTH-1:0] IF2_tag, ID_tag;
-    wire [SET_ID_WIDTH-1:0] IF2_set_id, ID_set_id;
-    wire [4:0] IF2_line_id1, IF2_line_id2, ID_line_id1, ID_line_id2;
+    wire [TAG_WIDTH-1:0] IF_tag, ID_tag;
+    wire [SET_ID_WIDTH-1:0] IF_set_id, ID_set_id;
+    wire [4:0] IF_line_id1, IF_line_id2, ID_line_id1, ID_line_id2;
 
+<<<<<<< HEAD
     assign IF2_tag = IF1_pc[31:6];
     assign IF2_set_id = IF1_pc[5:2];
     assign IF2_line_id1 = IF2_set_id*LINES_PER_SET;
     assign IF2_line_id2 = IF2_line_id1+1;
+=======
+    assign IF_tag = IF_pc[31:6];
+    assign IF_set_id = IF_pc[5:2];
+    assign IF_line_id1 = IF_set_id*LINES_PER_SET;
+    assign IF_line_id2 = IF_line_id1+1;
+>>>>>>> parent of 412c687 (Merge branch 'pipelined' into pipelined_synth)
 
     assign ID_tag = ID_pc[31:6];
     assign ID_set_id = ID_pc[5:2];
@@ -36,6 +52,7 @@ module BTB (
     // For Valid bit, 1 means the pc_imm value is valid
     // For FIFO bit, 1 means the line came in first
 
+<<<<<<< HEAD
     wire IF1_Branch1, IF1_Branch2, IF2_valid1, IF2_valid2, IF2_fifo1, IF2_fifo2;
     assign IF1_Branch1 = branch_target_buffer[IF2_line_id1][2];
     assign IF1_Branch2 = branch_target_buffer[IF2_line_id2][2];
@@ -43,6 +60,15 @@ module BTB (
     assign IF2_valid2 = branch_target_buffer[IF2_line_id2][1];
     assign IF2_fifo1 = branch_target_buffer[IF2_line_id1][0];
     assign IF2_fifo2 = branch_target_buffer[IF2_line_id2][0];
+=======
+    wire IF_branch1, IF_branch2, IF_valid1, IF_valid2, IF_fifo1, IF_fifo2;
+    assign IF_branch1 = branch_target_buffer[IF_line_id1][2];
+    assign IF_branch2 = branch_target_buffer[IF_line_id2][2];
+    assign IF_valid1 = branch_target_buffer[IF_line_id1][1];
+    assign IF_valid2 = branch_target_buffer[IF_line_id2][1];
+    assign IF_fifo1 = branch_target_buffer[IF_line_id1][0];
+    assign IF_fifo2 = branch_target_buffer[IF_line_id2][0];
+>>>>>>> parent of 412c687 (Merge branch 'pipelined' into pipelined_synth)
 
     wire ID_branch1, ID_branch2, ID_valid1, ID_valid2, ID_fifo1, ID_fifo2;
     assign ID_branch1 = branch_target_buffer[ID_line_id1][2];
@@ -52,41 +78,58 @@ module BTB (
     assign ID_fifo1 = branch_target_buffer[ID_line_id1][0];
     assign ID_fifo2 = branch_target_buffer[ID_line_id2][0];
 
-    wire [TAG_WIDTH-1:0] IF2_tag1, IF2_tag2;
-    assign IF2_tag1 = branch_target_buffer[IF2_line_id1][LINE_WIDTH-1:32+3];
-    assign IF2_tag2 = branch_target_buffer[IF2_line_id2][LINE_WIDTH-1:32+3];
+    wire [TAG_WIDTH-1:0] IF_tag1, IF_tag2;
+    assign IF_tag1 = branch_target_buffer[IF_line_id1][LINE_WIDTH-1:32+3];
+    assign IF_tag2 = branch_target_buffer[IF_line_id2][LINE_WIDTH-1:32+3];
 
     wire [31:0] pc_imm1, pc_imm2;
-    assign pc_imm1 = branch_target_buffer[IF2_line_id1][LINE_WIDTH-TAG_WIDTH-1:3];
-    assign pc_imm2 = branch_target_buffer[IF2_line_id2][LINE_WIDTH-TAG_WIDTH-1:3];
+    assign pc_imm1 = branch_target_buffer[IF_line_id1][LINE_WIDTH-TAG_WIDTH-1:3];
+    assign pc_imm2 = branch_target_buffer[IF_line_id2][LINE_WIDTH-TAG_WIDTH-1:3];
     
     wire set_full;
     assign set_full = ID_valid1 && ID_valid2;
 
-    assign hit = ((IF2_tag1 == IF2_tag && IF2_valid1) || (IF2_tag2 == IF2_tag && IF2_valid2));
+    assign hit = ((IF_tag1 == IF_tag && IF_valid1) || (IF_tag2 == IF_tag && IF_valid2));
 
     // BTB reads
 
     always @ (*) begin
 
+<<<<<<< HEAD
         IF1_Branch = 0;
         IF1_Jump = 0;
+=======
+        IF_Branch = 0;
+        IF_Jump = 0;
+>>>>>>> parent of 412c687 (Merge branch 'pipelined' into pipelined_synth)
         pc_imm_out = 0;
 
         // if tag matches and valid bit is 1
-        if (IF2_tag1 == IF2_tag && IF2_valid1) begin
+        if (IF_tag1 == IF_tag && IF_valid1) begin
             
+<<<<<<< HEAD
             if (!IF1_Branch1) begin
 
                 IF1_Branch = 0;
                 IF1_Jump = 1;
+=======
+            if (!IF_branch1) begin
+
+                IF_Branch = 0;
+                IF_Jump = 1;
+>>>>>>> parent of 412c687 (Merge branch 'pipelined' into pipelined_synth)
 
             end
 
             else begin
 
+<<<<<<< HEAD
                 IF1_Branch = 1;
                 IF1_Jump = 0;
+=======
+                IF_Branch = 1;
+                IF_Jump = 0;
+>>>>>>> parent of 412c687 (Merge branch 'pipelined' into pipelined_synth)
 
             end
 
@@ -94,19 +137,31 @@ module BTB (
 
         end
 
-        if (IF2_tag2 == IF2_tag && IF2_valid2) begin
+        if (IF_tag2 == IF_tag && IF_valid2) begin
             
+<<<<<<< HEAD
             if (!IF1_Branch2) begin
 
                 IF1_Branch = 0;
                 IF1_Jump = 1;
+=======
+            if (!IF_branch2) begin
+
+                IF_Branch = 0;
+                IF_Jump = 1;
+>>>>>>> parent of 412c687 (Merge branch 'pipelined' into pipelined_synth)
 
             end
 
             else begin
 
+<<<<<<< HEAD
                 IF1_Branch = 1;
                 IF1_Jump = 0;
+=======
+                IF_Branch = 1;
+                IF_Jump = 0;
+>>>>>>> parent of 412c687 (Merge branch 'pipelined' into pipelined_synth)
 
             end
 

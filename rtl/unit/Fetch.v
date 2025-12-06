@@ -1,23 +1,30 @@
 `timescale 1ns/1ps
 
 module Fetch(
+<<<<<<< HEAD
     input [1:0] IF1_branch_prediction, ID_branch_prediction, prediction_status, 
     input IF1_BTBhit, ID_BTBhit, IF1_Branch, IF1_Jump, ID_Branch, EX_Branch, ID_Jump, EX_Jump, ID_ALUSrc, EX_ALUSrc,
     input [31:0] IF1_pc, IF1_pc_imm, EX_pc_4, ID_pc_imm, EX_pc_imm, rs1_imm,
     output [31:0] IF1_pc_4,
+=======
+    input [1:0] IF_branch_prediction, ID_branch_prediction, prediction_status, 
+    input IF_BTBhit, ID_BTBhit, IF_Branch, IF_Jump, ID_Branch, EX_Branch, ID_Jump, EX_Jump, ID_ALUSrc, EX_ALUSrc,
+    input [31:0] IF_pc, IF_pc_imm, EX_pc_4, ID_pc_imm, EX_pc_imm, rs1_imm,
+    output [31:0] IF_pc_4,
+>>>>>>> parent of 412c687 (Merge branch 'pipelined' into pipelined_synth)
     output reg [31:0] next_pc,
-    output reg IF2_Flush, ID_Flush, EX_Flush
+    output reg ID_Flush, EX_Flush
 );
 
-    assign IF1_pc_4 = IF1_pc+4;
+    assign IF_pc_4 = IF_pc+4;
 
     always @ (*) begin
 
-        IF2_Flush = 0;
         ID_Flush = 0;
         EX_Flush = 0;
-        next_pc = IF1_pc_4;
+        next_pc = IF_pc_4;
 
+<<<<<<< HEAD
         if (IF1_BTBhit) begin
 
             if (IF1_Branch) begin
@@ -27,6 +34,17 @@ module Fetch(
             end
 
             else if (IF1_Jump) next_pc = IF1_pc_imm;
+=======
+        if (IF_BTBhit) begin
+
+            if (IF_Branch) begin
+
+                if (IF_branch_prediction == 2'b10 || IF_branch_prediction == 2'b11) next_pc = IF_pc_imm;
+
+            end
+
+            else if (IF_Jump) next_pc = IF_pc_imm;
+>>>>>>> parent of 412c687 (Merge branch 'pipelined' into pipelined_synth)
             
         end
 
@@ -37,7 +55,6 @@ module Fetch(
                 if (ID_branch_prediction == 2'b10 || ID_branch_prediction == 2'b11) begin
 
                     next_pc = ID_pc_imm;
-                    IF2_Flush = 1;
                     ID_Flush = 1;
 
                 end
@@ -48,7 +65,6 @@ module Fetch(
             else if (ID_Jump && ID_ALUSrc == 0) begin 
 
                 next_pc = ID_pc_imm; // JAL
-                IF2_Flush = 1;
                 ID_Flush = 1;
                 
             end
@@ -62,7 +78,6 @@ module Fetch(
                 0: begin
 
                     next_pc = EX_pc_imm;
-                    IF2_Flush = 1;
                     ID_Flush = 1;
                     EX_Flush = 1;
 
@@ -71,7 +86,6 @@ module Fetch(
                 1: begin
 
                     next_pc = EX_pc_4;
-                    IF2_Flush = 1;
                     ID_Flush = 1;
 
                 end
@@ -82,7 +96,6 @@ module Fetch(
 
         else if (EX_Jump && EX_ALUSrc != 0) begin
             
-            IF2_Flush = 1;
             ID_Flush = 1;
             EX_Flush = 1;
             next_pc = rs1_imm & 32'hFFFFFFFE; // JALR, clear lsb to ensure word alignment
