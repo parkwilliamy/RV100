@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
 
 module RegFile (
-    input clk, RegWrite,
+    input clk, rst_n, RegWrite,
     input [4:0] rs1, rs2, rd,
     input [31:0] rd_write_data,
     output [31:0] rs1_data, rs2_data 
