@@ -1,10 +1,10 @@
 `timescale 1ns/1ps
 
 module UART (
-    input clk, rst_n, RX, tx_ready,
+    input clk, rst_n, RX, TX_enable,
     input [7:0] TX_data,
-    output TX, byte_done,
-    output reg [7:0] DATA_RX
+    output reg TX, byte_done,
+    output reg [7:0] RX_data,
 );
 
     // This module assumes a baud rate of 1Mb/s
@@ -37,7 +37,7 @@ module UART (
             baud_tick <= 0;
             data_buffer <= 0;
             RX_buffer <= 0;
-            DATA_RX <= 0;
+            RX_data <= 0;
 
         end
 
@@ -47,34 +47,75 @@ module UART (
             RX_buffer <= {RX_buffer[0], RX};
             baud_count <= baud_count+1;
 
-            if (current_state == IDLE) begin
+            case(current_state) 
 
-                if (RX_negedge) baud_count <= 13; // START_RX baud counter from halfway for half baud tick
+                IDLE: begin
 
-            end
+                    if (RX_negedge) baud_count <= 13; // START_RX baud counter from halfway for half baud tick
+                    else if (TX_enable) begin
 
-            else if (current_state == START_RX) begin
+                        baud <= 0;
+                        TX <= 0; // set start bit
 
-                if (baud_tick) data_idx <= 0; // reset DATA_RX counter to 0 before transition to DATA_RX
+                    end
 
-            end
-
-            else if (current_state == DATA_RX) begin
-
-                if (baud_tick) begin
-
-                    data_idx <= data_idx+1;
-                    data_buffer <= {data_buffer[6:0], RX};
+                    byte_done <= 0;
+                    data_buffer <= 0;
 
                 end
 
-            end
+                // RX LOGIC
 
-            else if (current_state == STOP_RX) begin
+                START_RX: begin
 
-                if (baud_tick) DATA_RX <= data_buffer;
+                    if (baud_tick) data_idx <= 0; // reset DATA_RX counter to 0 before transition to DATA_RX
 
-            end
+                end
+
+                DATA_RX: begin
+
+                    if (baud_tick) begin
+
+                        data_idx <= data_idx+1;
+                        data_buffer <= {RX, data_buffer[6:0]};
+
+                    end
+
+                end
+
+                STOP_RX: begin
+
+                    if (baud_tick) RX_data <= data_buffer;
+
+                end
+
+                // TX LOGIC
+
+                START_TX: begin
+
+                    data_idx <= 0;
+
+                end
+
+                DATA_TX: begin
+
+                    if (baud_tick) begin
+                        
+                        TX <= TX_data[data_idx];
+                        if (data_idx != 7) data_idx <= data_idx+1;
+                        else TX <= 1; // set stop bit
+
+                    end
+                    
+                end
+
+                STOP_TX: begin
+
+                    if (baud_tick) byte_done <= 1;
+
+                end
+
+            endcase
 
             if (baud_count == MAX_COUNT-1) begin
 
@@ -99,7 +140,7 @@ module UART (
             IDLE: begin
 
                 if (RX_negedge) next_state = START_RX;
-                else if (tx_ready) next_state = START_TX;
+                else if (TX_enable) next_state = START_TX;
                 else next_state = IDLE;
 
             end
@@ -119,6 +160,8 @@ module UART (
 
             START_TX: begin
 
+                if (baud_tick) next_state = DATA_TX;
+                else next_state = START_TX;
 
             end
 
@@ -130,6 +173,9 @@ module UART (
             end
 
             DATA_TX: begin
+
+                if (baud_tick && data_idx == 7) next_state = STOP_TX;
+                else next_state = DATA_TX;
 
 
             end
@@ -143,7 +189,8 @@ module UART (
 
             STOP_TX: begin
 
-
+                if (baud_tick) next_state = IDLE;
+                else next_state = STOP_TX;
 
             end
 
