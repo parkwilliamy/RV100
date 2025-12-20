@@ -12,8 +12,8 @@ module MemAccess (
 );
 
     localparam ADDR_WIDTH = 16;
-    localparam IDLE = 3'b000, WRITE_1 = 3'b001, WRITE_2 = 3'b010, READ_1 = 3'b011, READ_2 = 3'b100, READ_3 = 3'b101, READ_4 = 3'b110, READ_5 = 3'b111;
-    reg [2:0] current_state, next_state;
+    localparam IDLE = 4'b0000, WRITE_1 = 4'b0001, WRITE_2 = 4'b0010, WRITE_3 = 4'b0011, READ_1 = 4'b0100, READ_2 = 4'b0101, READ_3 = 4'b0110, READ_4 = 4'b0111, READ_5 = 4'b1000;
+    reg [3:0] current_state, next_state;
 
     reg [55:0] write_frame;
     reg [31:0] read_frame;
@@ -73,6 +73,13 @@ module MemAccess (
                 end
 
                 WRITE_2: begin
+
+                    write_frame <= {RX_data, write_frame[55:8]};
+                    
+
+                end
+
+                WRITE_3: begin
 
                     addra <= write_frame[ADDR_WIDTH-1:0];
                     wea <= write_frame[19:16];
@@ -143,12 +150,18 @@ module MemAccess (
 
             WRITE_1: begin
 
-                if (msgidx == 6 && byte_done) next_state = WRITE_2;
+                if (msgidx == 6) next_state = WRITE_2;
                 else next_state = WRITE_1;
 
             end
 
             WRITE_2: begin
+
+                next_state = WRITE_3;
+
+            end
+
+            WRITE_3: begin
 
                 next_state = IDLE;
 
