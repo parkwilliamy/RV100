@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<GenRun Id="synth_1" LaunchPart="xc7a35tcpg236-1" LaunchTime="1766162623" LaunchIncrCheckpoint="$PSRCDIR/utils_1/imports/synth_1/top.dcp">
+<GenRun Id="synth_1" LaunchPart="xc7a35tcpg236-1" LaunchTime="1766270466" LaunchIncrCheckpoint="$PSRCDIR/utils_1/imports/synth_1/top.dcp">
   <File Type="PA-TCL" Name="top.tcl"/>
   <File Type="REPORTS-TCL" Name="top_reports.tcl"/>
   <File Type="RDS-RDS" Name="top.vds"/>
@@ -63,7 +63,7 @@
     </File>
     <File Path="$PSRCDIR/sources_1/imports/rtl/pipe/CPU.v">
       <FileInfo>
-        <Attr Name="ImportPath" Val="$PPRDIR/../RV100/rtl/pipe/CPU.v"/>
+        <Attr Name="ImportPath" Val="$PPRDIR/../../rtl/pipe/CPU.v"/>
         <Attr Name="ImportTime" Val="1765492573"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
@@ -108,7 +108,7 @@
     </File>
     <File Path="$PSRCDIR/sources_1/imports/rtl/unit/MemAccess.v">
       <FileInfo>
-        <Attr Name="ImportPath" Val="$PPRDIR/../RV100/rtl/unit/MemAccess.v"/>
+        <Attr Name="ImportPath" Val="$PPRDIR/../../rtl/unit/MemAccess.v"/>
         <Attr Name="ImportTime" Val="1765491949"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
@@ -144,7 +144,7 @@
     </File>
     <File Path="$PSRCDIR/sources_1/imports/rtl/unit/UART.v">
       <FileInfo>
-        <Attr Name="ImportPath" Val="$PPRDIR/../RV100/rtl/unit/UART.v"/>
+        <Attr Name="ImportPath" Val="$PPRDIR/../../rtl/unit/UART.v"/>
         <Attr Name="ImportTime" Val="1765491949"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>

@@ -4,7 +4,7 @@ import serial
 
 # Configure the serial port
 ser = serial.Serial(
-    port='COM4',                  # Use COM4
+    port='COM8',                  # Use COM4
     baudrate=1000000,              # Baud rate: 1000000
     bytesize=serial.EIGHTBITS,    # 8 data bits
     parity=serial.PARITY_NONE,    # No parity bit
@@ -21,11 +21,14 @@ def main():
     
     while (1):
         while (1):
-            mode = "".join(input("Enter R for Read Mode, Enter W for Write Mode: ").split())
-            if mode == "R" or mode == "W" or mode == "Debug":
+            mode = "".join(input("Enter R for Read Mode, Enter W for Write Mode, Enter q to quit: ").split())
+            if mode == "R" or mode == "W":
                 break
+            elif mode == "q":
+                quit()
 
         MEM_SIZE = 0x8000
+        MEM_WORDS = ((MEM_SIZE-4) // 4) + 1
         ADDR_LOW = -1
         ADDR_HIGH = -1
         
@@ -51,6 +54,8 @@ def main():
         elif mode == "W":
             MEM_FILE = "".join(input(f"Enter path to program/data file, must be .hex format: ").split())
 
+            words_written = 0
+
             with open(MEM_FILE, "r") as f:
                 for line_num, line in enumerate(f):
                     word_str = line.strip()
@@ -60,10 +65,17 @@ def main():
                     wea = 0b1111
 
                     write_mem_frame(addra, wea, word)
-        
-        else:
 
-            write_mem_frame(0x0F, 0x00, 0b1111, 0xdeadbeef)
+                    words_written += 1
+
+            while (words_written < MEM_WORDS):
+
+                addra = words_written*4
+                wea = 0b1111
+
+                write_mem_frame(addra, wea, 0x00000000)
+
+                words_written += 1
 
 def write_mem_frame(addra, wea, word):
 

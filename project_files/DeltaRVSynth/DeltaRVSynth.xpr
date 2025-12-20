@@ -4,7 +4,7 @@
 <!-- Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.                   -->
 <!-- Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.   -->
 
-<Project Product="Vivado" Version="7" Minor="71" Path="C:/Users/parkw/DeltaRVSynth/DeltaRVSynth.xpr">
+<Project Product="Vivado" Version="7" Minor="71" Path="C:/Users/parkw/RV100/project_files/DeltaRVSynth/DeltaRVSynth.xpr">
   <DefaultLaunch Dir="$PRUNDIR"/>
   <Configuration>
     <Option Name="Id" Val="44b113a36ca4405cafc19b42dc8ad9b6"/>
@@ -142,7 +142,7 @@
       </File>
       <File Path="$PSRCDIR/sources_1/imports/rtl/pipe/CPU.v">
         <FileInfo>
-          <Attr Name="ImportPath" Val="$PPRDIR/../RV100/rtl/pipe/CPU.v"/>
+          <Attr Name="ImportPath" Val="$PPRDIR/../../rtl/pipe/CPU.v"/>
           <Attr Name="ImportTime" Val="1765492573"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
@@ -187,7 +187,7 @@
       </File>
       <File Path="$PSRCDIR/sources_1/imports/rtl/unit/MemAccess.v">
         <FileInfo>
-          <Attr Name="ImportPath" Val="$PPRDIR/../RV100/rtl/unit/MemAccess.v"/>
+          <Attr Name="ImportPath" Val="$PPRDIR/../../rtl/unit/MemAccess.v"/>
           <Attr Name="ImportTime" Val="1765491949"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
@@ -223,7 +223,7 @@
       </File>
       <File Path="$PSRCDIR/sources_1/imports/rtl/unit/UART.v">
         <FileInfo>
-          <Attr Name="ImportPath" Val="$PPRDIR/../RV100/rtl/unit/UART.v"/>
+          <Attr Name="ImportPath" Val="$PPRDIR/../../rtl/unit/UART.v"/>
           <Attr Name="ImportTime" Val="1765491949"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>

@@ -4,7 +4,7 @@
 
 set TIME_start [clock seconds] 
 namespace eval ::optrace {
-  variable script "C:/Users/parkw/DeltaRVSynth/DeltaRVSynth.runs/synth_1/top.tcl"
+  variable script "C:/Users/parkw/RV100/project_files/DeltaRVSynth/DeltaRVSynth.runs/synth_1/top.tcl"
   variable category "vivado_synth"
 }
 
@@ -66,41 +66,41 @@ set_param project.singleFileAddWarning.threshold 0
 set_param project.compositeFile.enableAutoGeneration 0
 set_param synth.vivado.isSynthRun true
 set_msg_config -source 4 -id {IP_Flow 19-2162} -severity warning -new_severity info
-set_property webtalk.parent_dir C:/Users/parkw/DeltaRVSynth/DeltaRVSynth.cache/wt [current_project]
-set_property parent.project_path C:/Users/parkw/DeltaRVSynth/DeltaRVSynth.xpr [current_project]
+set_property webtalk.parent_dir C:/Users/parkw/RV100/project_files/DeltaRVSynth/DeltaRVSynth.cache/wt [current_project]
+set_property parent.project_path C:/Users/parkw/RV100/project_files/DeltaRVSynth/DeltaRVSynth.xpr [current_project]
 set_property XPM_LIBRARIES {XPM_CDC XPM_MEMORY} [current_project]
 set_property default_lib xil_defaultlib [current_project]
 set_property target_language Verilog [current_project]
 set_property board_part digilentinc.com:basys3:part0:1.2 [current_project]
-set_property ip_output_repo c:/Users/parkw/DeltaRVSynth/DeltaRVSynth.cache/ip [current_project]
+set_property ip_output_repo c:/Users/parkw/RV100/project_files/DeltaRVSynth/DeltaRVSynth.cache/ip [current_project]
 set_property ip_cache_permissions {read write} [current_project]
 OPTRACE "Creating in-memory project" END { }
 OPTRACE "Adding files" START { }
 read_verilog -library xil_defaultlib {
-  C:/Users/parkw/DeltaRVSynth/DeltaRVSynth.srcs/sources_1/imports/DeltaRV/rtl/unit/ALU.v
-  C:/Users/parkw/DeltaRVSynth/DeltaRVSynth.srcs/sources_1/imports/DeltaRV/rtl/unit/ALUControl.v
-  C:/Users/parkw/DeltaRVSynth/DeltaRVSynth.srcs/sources_1/imports/DeltaRV/rtl/unit/BRU.v
-  C:/Users/parkw/DeltaRVSynth/DeltaRVSynth.srcs/sources_1/imports/mem/BTB.v
-  C:/Users/parkw/DeltaRVSynth/DeltaRVSynth.srcs/sources_1/imports/rtl/pipe/CPU.v
-  C:/Users/parkw/DeltaRVSynth/DeltaRVSynth.srcs/sources_1/imports/DeltaRV/rtl/unit/ControlUnit.v
-  C:/Users/parkw/DeltaRVSynth/DeltaRVSynth.srcs/sources_1/imports/unit/Fetch.v
-  C:/Users/parkw/DeltaRVSynth/DeltaRVSynth.srcs/sources_1/imports/DeltaRV/rtl/unit/ForwardUnit.v
-  C:/Users/parkw/DeltaRVSynth/DeltaRVSynth.srcs/sources_1/imports/DeltaRV/rtl/unit/ImmGen.v
-  C:/Users/parkw/DeltaRVSynth/DeltaRVSynth.srcs/sources_1/imports/rtl/unit/MemAccess.v
-  C:/Users/parkw/DeltaRVSynth/DeltaRVSynth.srcs/sources_1/imports/DeltaRV/rtl/unit/RegFile.v
-  C:/Users/parkw/DeltaRVSynth/DeltaRVSynth.srcs/sources_1/imports/DeltaRV/rtl/unit/StallUnit.v
-  C:/Users/parkw/DeltaRVSynth/DeltaRVSynth.srcs/sources_1/imports/DeltaRV/rtl/unit/Store.v
-  C:/Users/parkw/DeltaRVSynth/DeltaRVSynth.srcs/sources_1/imports/rtl/unit/UART.v
-  C:/Users/parkw/DeltaRVSynth/DeltaRVSynth.srcs/sources_1/imports/DeltaRV/rtl/unit/WriteBack.v
-  C:/Users/parkw/DeltaRVSynth/DeltaRVSynth.srcs/sources_1/imports/pipe/top.v
+  C:/Users/parkw/RV100/project_files/DeltaRVSynth/DeltaRVSynth.srcs/sources_1/imports/DeltaRV/rtl/unit/ALU.v
+  C:/Users/parkw/RV100/project_files/DeltaRVSynth/DeltaRVSynth.srcs/sources_1/imports/DeltaRV/rtl/unit/ALUControl.v
+  C:/Users/parkw/RV100/project_files/DeltaRVSynth/DeltaRVSynth.srcs/sources_1/imports/DeltaRV/rtl/unit/BRU.v
+  C:/Users/parkw/RV100/project_files/DeltaRVSynth/DeltaRVSynth.srcs/sources_1/imports/mem/BTB.v
+  C:/Users/parkw/RV100/project_files/DeltaRVSynth/DeltaRVSynth.srcs/sources_1/imports/rtl/pipe/CPU.v
+  C:/Users/parkw/RV100/project_files/DeltaRVSynth/DeltaRVSynth.srcs/sources_1/imports/DeltaRV/rtl/unit/ControlUnit.v
+  C:/Users/parkw/RV100/project_files/DeltaRVSynth/DeltaRVSynth.srcs/sources_1/imports/unit/Fetch.v
+  C:/Users/parkw/RV100/project_files/DeltaRVSynth/DeltaRVSynth.srcs/sources_1/imports/DeltaRV/rtl/unit/ForwardUnit.v
+  C:/Users/parkw/RV100/project_files/DeltaRVSynth/DeltaRVSynth.srcs/sources_1/imports/DeltaRV/rtl/unit/ImmGen.v
+  C:/Users/parkw/RV100/project_files/DeltaRVSynth/DeltaRVSynth.srcs/sources_1/imports/rtl/unit/MemAccess.v
+  C:/Users/parkw/RV100/project_files/DeltaRVSynth/DeltaRVSynth.srcs/sources_1/imports/DeltaRV/rtl/unit/RegFile.v
+  C:/Users/parkw/RV100/project_files/DeltaRVSynth/DeltaRVSynth.srcs/sources_1/imports/DeltaRV/rtl/unit/StallUnit.v
+  C:/Users/parkw/RV100/project_files/DeltaRVSynth/DeltaRVSynth.srcs/sources_1/imports/DeltaRV/rtl/unit/Store.v
+  C:/Users/parkw/RV100/project_files/DeltaRVSynth/DeltaRVSynth.srcs/sources_1/imports/rtl/unit/UART.v
+  C:/Users/parkw/RV100/project_files/DeltaRVSynth/DeltaRVSynth.srcs/sources_1/imports/DeltaRV/rtl/unit/WriteBack.v
+  C:/Users/parkw/RV100/project_files/DeltaRVSynth/DeltaRVSynth.srcs/sources_1/imports/pipe/top.v
 }
-read_ip -quiet C:/Users/parkw/DeltaRVSynth/DeltaRVSynth.srcs/sources_1/ip/blk_mem_gen_0/blk_mem_gen_0.xci
-set_property used_in_implementation false [get_files -all c:/Users/parkw/DeltaRVSynth/DeltaRVSynth.gen/sources_1/ip/blk_mem_gen_0/blk_mem_gen_0_ooc.xdc]
+read_ip -quiet C:/Users/parkw/RV100/project_files/DeltaRVSynth/DeltaRVSynth.srcs/sources_1/ip/blk_mem_gen_0/blk_mem_gen_0.xci
+set_property used_in_implementation false [get_files -all c:/Users/parkw/RV100/project_files/DeltaRVSynth/DeltaRVSynth.gen/sources_1/ip/blk_mem_gen_0/blk_mem_gen_0_ooc.xdc]
 
-read_ip -quiet C:/Users/parkw/DeltaRVSynth/DeltaRVSynth.srcs/sources_1/ip/clk_wiz_0/clk_wiz_0.xci
-set_property used_in_implementation false [get_files -all c:/Users/parkw/DeltaRVSynth/DeltaRVSynth.gen/sources_1/ip/clk_wiz_0/clk_wiz_0_board.xdc]
-set_property used_in_implementation false [get_files -all c:/Users/parkw/DeltaRVSynth/DeltaRVSynth.gen/sources_1/ip/clk_wiz_0/clk_wiz_0.xdc]
-set_property used_in_implementation false [get_files -all c:/Users/parkw/DeltaRVSynth/DeltaRVSynth.gen/sources_1/ip/clk_wiz_0/clk_wiz_0_ooc.xdc]
+read_ip -quiet C:/Users/parkw/RV100/project_files/DeltaRVSynth/DeltaRVSynth.srcs/sources_1/ip/clk_wiz_0/clk_wiz_0.xci
+set_property used_in_implementation false [get_files -all c:/Users/parkw/RV100/project_files/DeltaRVSynth/DeltaRVSynth.gen/sources_1/ip/clk_wiz_0/clk_wiz_0_board.xdc]
+set_property used_in_implementation false [get_files -all c:/Users/parkw/RV100/project_files/DeltaRVSynth/DeltaRVSynth.gen/sources_1/ip/clk_wiz_0/clk_wiz_0.xdc]
+set_property used_in_implementation false [get_files -all c:/Users/parkw/RV100/project_files/DeltaRVSynth/DeltaRVSynth.gen/sources_1/ip/clk_wiz_0/clk_wiz_0_ooc.xdc]
 
 OPTRACE "Adding files" END { }
 # Mark all dcp files as not used in implementation to prevent them from being
@@ -111,14 +111,14 @@ OPTRACE "Adding files" END { }
 foreach dcp [get_files -quiet -all -filter file_type=="Design\ Checkpoint"] {
   set_property used_in_implementation false $dcp
 }
-read_xdc C:/Users/parkw/DeltaRVSynth/DeltaRVSynth.srcs/constrs_1/imports/digilent-xdc-master/Basys-3-Master.xdc
-set_property used_in_implementation false [get_files C:/Users/parkw/DeltaRVSynth/DeltaRVSynth.srcs/constrs_1/imports/digilent-xdc-master/Basys-3-Master.xdc]
+read_xdc C:/Users/parkw/RV100/project_files/DeltaRVSynth/DeltaRVSynth.srcs/constrs_1/imports/digilent-xdc-master/Basys-3-Master.xdc
+set_property used_in_implementation false [get_files C:/Users/parkw/RV100/project_files/DeltaRVSynth/DeltaRVSynth.srcs/constrs_1/imports/digilent-xdc-master/Basys-3-Master.xdc]
 
 read_xdc dont_touch.xdc
 set_property used_in_implementation false [get_files dont_touch.xdc]
 set_param ips.enableIPCacheLiteLoad 1
 
-read_checkpoint -auto_incremental -incremental C:/Users/parkw/DeltaRVSynth/DeltaRVSynth.srcs/utils_1/imports/synth_1/top.dcp
+read_checkpoint -auto_incremental -incremental C:/Users/parkw/RV100/project_files/DeltaRVSynth/DeltaRVSynth.srcs/utils_1/imports/synth_1/top.dcp
 close [open __synthesis_is_running__ w]
 
 OPTRACE "synth_design" START { }
