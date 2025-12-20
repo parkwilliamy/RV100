@@ -30,7 +30,7 @@ module MemAccess_tb;
     bit [3:0] wea;
     bit [31:0] dia;
     logic [7:0] TX_data;
-    logic [15:0] ADDR_LOW, ADDR_HIGH;
+    logic [15:0] addr;
 
     MemAccess DUT (
         .clk(clk), 
@@ -116,10 +116,9 @@ module MemAccess_tb;
         $display("================================= READ Tests ===================================\n");
 
         
-        ADDR_LOW = 16'h5000;
-        ADDR_HIGH = 16'h500C;
-        $display("ADDR_LOW: %04h, ADDR_HIGH: %04h", ADDR_LOW, ADDR_HIGH);
-        send_read_frame(ADDR_LOW, ADDR_HIGH);
+        addr = 16'h5004;
+        $display("addr: %016h", addr);
+        send_read_frame(addr);
 
         #200000;
 
@@ -159,13 +158,11 @@ module MemAccess_tb;
 
     endtask
 
-    task send_read_frame(input [15:0] ADDR_LOW, input [15:0] ADDR_HIGH);
+    task send_read_frame(input [15:0] addr);
 
         send_uart(8'hFF); // start byte for WRITE mode
-        send_uart(ADDR_HIGH[7:0]);
-        send_uart(ADDR_HIGH[15:8]);
-        send_uart(ADDR_LOW[7:0]);
-        send_uart(ADDR_LOW[15:8]);
+        send_uart(addr[7:0]);
+        send_uart(addr[15:8]);
         
 
     endtask
