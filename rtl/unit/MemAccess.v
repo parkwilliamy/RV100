@@ -12,13 +12,12 @@ module MemAccess (
 );
 
     localparam ADDR_WIDTH = 16;
-    localparam IDLE = 4'b0000, WRITE_1 = 4'b0001, WRITE_2 = 4'b0010, WRITE_3 = 4'b0011, READ_1 = 4'b0100, READ_2 = 4'b0101, READ_3 = 4'b0110, READ_4 = 4'b0111, READ_5 = 4'b1000;
-    reg [3:0] current_state, next_state;
+    localparam IDLE = 3'b000, WRITE_1 = 3'b001, WRITE_2 = 3'b010, READ_1 = 3'b011, READ_2 = 3'b100, READ_3 = 3'b101, READ_4 = 3'b110, READ_5 = 3'b111;
+    reg [2:0] current_state, next_state;
 
     reg [55:0] write_frame;
-    reg [31:0] read_frame;
+    reg [15:0] read_frame;
     reg [2:0] msgidx;
-    reg [15:0] ADDR_HIGH;
     reg [1:0] word_idx;
 
     always @ (posedge clk) begin
@@ -36,7 +35,6 @@ module MemAccess (
             addrb <= 0;
             wea <= 0;
             dia <= 0;
-            ADDR_HIGH <= 16'h7ffc;
 
         end
 
@@ -74,13 +72,6 @@ module MemAccess (
 
                 WRITE_2: begin
 
-                    write_frame <= {RX_data, write_frame[55:8]};
-                    
-
-                end
-
-                WRITE_3: begin
-
                     addra <= write_frame[ADDR_WIDTH-1:0];
                     wea <= write_frame[19:16];
                     dia <= write_frame[55:24];
@@ -92,17 +83,15 @@ module MemAccess (
                     if (byte_done) begin
 
                         msgidx <= msgidx+1;
-                        read_frame <= {RX_data, read_frame[31:8]};
+                        read_frame <= {RX_data, read_frame[15:8]};
 
                     end
 
                 end
 
-                READ_2: begin
+                READ_2: begin 
 
-                    ADDR_HIGH <= read_frame[ADDR_WIDTH-1:0];
-                    addrb <= read_frame[ADDR_WIDTH-1+16:16]; // ADDR_LOW
-                    
+                    addrb <= read_frame[ADDR_WIDTH-1:0]; 
 
                 end
 
@@ -119,9 +108,8 @@ module MemAccess (
 
                     if (byte_done) begin
 
-                        word_idx <= (word_idx+1)%4; // used to loop between 0-3 and select parts of data word to transmit
-                        if (addrb != ADDR_HIGH+4) TX_data <= dob[7+8*word_idx -: 8];
-                        if (word_idx == 3) addrb <= addrb+4;
+                        word_idx <= word_idx+1; // used to loop between 0-3 and select parts of data word to transmit
+                        TX_data <= dob[7+8*word_idx -: 8];
 
                     end
 
@@ -142,26 +130,20 @@ module MemAccess (
 
             IDLE: begin
 
-                if (RX_data == 8'h0F) next_state = WRITE_1;
-                else if (RX_data == 8'hFF) next_state = READ_1;
+                if (RX_data == 8'h0F && byte_done) next_state = WRITE_1;
+                else if (RX_data == 8'hFF && byte_done) next_state = READ_1;
                 else next_state = IDLE;
 
             end
 
             WRITE_1: begin
 
-                if (msgidx == 6) next_state = WRITE_2;
+                if (msgidx == 6 && byte_done) next_state = WRITE_2;
                 else next_state = WRITE_1;
 
             end
 
             WRITE_2: begin
-
-                next_state = WRITE_3;
-
-            end
-
-            WRITE_3: begin
 
                 next_state = IDLE;
 
@@ -169,7 +151,7 @@ module MemAccess (
 
             READ_1: begin
 
-                if (msgidx == 3 && byte_done) next_state = READ_2;
+                if (msgidx == 1 && byte_done) next_state = READ_2;
                 else next_state = READ_1;
 
             end
@@ -194,7 +176,7 @@ module MemAccess (
 
             READ_5: begin
                 
-                if (addrb == ADDR_HIGH+4 && byte_done) next_state = IDLE;
+                if (word_idx == 3 && byte_done) next_state = IDLE;
                 else next_state = READ_5;
 
             end

@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025
-| Date         : Sat Dec 20 14:45:02 2025
+| Date         : Sat Dec 20 15:55:01 2025
 | Host         : dt-wypark running 64-bit major release  (build 9200)
 | Command      : report_utilization -file top_utilization_synth.rpt -pb top_utilization_synth.pb
 | Design       : top
@@ -31,15 +31,15 @@ Table of Contents
 +-------------------------+------+-------+------------+-----------+-------+
 |        Site Type        | Used | Fixed | Prohibited | Available | Util% |
 +-------------------------+------+-------+------------+-----------+-------+
-| Slice LUTs*             | 4446 |     0 |          0 |     20800 | 21.38 |
-|   LUT as Logic          | 4446 |     0 |          0 |     20800 | 21.38 |
+| Slice LUTs*             | 4415 |     0 |          0 |     20800 | 21.23 |
+|   LUT as Logic          | 4415 |     0 |          0 |     20800 | 21.23 |
 |   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |
-| Slice Registers         | 4294 |     0 |          0 |     41600 | 10.32 |
-|   Register as Flip Flop | 4294 |     0 |          0 |     41600 | 10.32 |
+| Slice Registers         | 4262 |     0 |          0 |     41600 | 10.25 |
+|   Register as Flip Flop | 4262 |     0 |          0 |     41600 | 10.25 |
 |   Register as Latch     |    0 |     0 |          0 |     41600 |  0.00 |
 | F7 Muxes                |  600 |     0 |          0 |     16300 |  3.68 |
 | F8 Muxes                |  228 |     0 |          0 |      8150 |  2.80 |
-| Unique Control Sets     |   86 |       |          0 |      8150 |  1.06 |
+| Unique Control Sets     |   85 |       |          0 |      8150 |  1.04 |
 +-------------------------+------+-------+------------+-----------+-------+
 * Warning! The Final LUT count, after physical optimizations and full implementation, is typically lower. Run opt_design after synthesis, if not already completed, for a more realistic count.
 Warning! LUT value is adjusted to account for LUT combining.
@@ -61,8 +61,8 @@ Warning! For any ECO changes, please run place_design if there are unplaced inst
 | 0     |          Yes |           - |            - |
 | 0     |          Yes |           - |          Set |
 | 0     |          Yes |           - |        Reset |
-| 281   |          Yes |         Set |            - |
-| 4013  |          Yes |       Reset |            - |
+| 268   |          Yes |         Set |            - |
+| 3994  |          Yes |       Reset |            - |
 +-------+--------------+-------------+--------------+
 
 
@@ -155,18 +155,18 @@ Warning! For any ECO changes, please run place_design if there are unplaced inst
 +------------+------+---------------------+
 |  Ref Name  | Used | Functional Category |
 +------------+------+---------------------+
-| FDRE       | 4013 |        Flop & Latch |
-| LUT6       | 2766 |                 LUT |
-| LUT5       | 1007 |                 LUT |
+| FDRE       | 3994 |        Flop & Latch |
+| LUT6       | 2745 |                 LUT |
+| LUT5       |  991 |                 LUT |
 | MUXF7      |  600 |               MuxFx |
-| LUT4       |  423 |                 LUT |
-| LUT2       |  358 |                 LUT |
-| FDSE       |  281 |        Flop & Latch |
-| LUT3       |  280 |                 LUT |
+| LUT4       |  431 |                 LUT |
+| LUT2       |  357 |                 LUT |
+| LUT3       |  275 |                 LUT |
+| FDSE       |  268 |        Flop & Latch |
 | MUXF8      |  228 |               MuxFx |
-| CARRY4     |   60 |          CarryLogic |
-| LUT1       |   18 |                 LUT |
+| CARRY4     |   48 |          CarryLogic |
 | OBUF       |   17 |                  IO |
+| LUT1       |   16 |                 LUT |
 | RAMB36E1   |    8 |        Block Memory |
 | IBUF       |    6 |                  IO |
 | BUFG       |    2 |               Clock |
