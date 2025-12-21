@@ -8,11 +8,11 @@ int main() {
         flag = !flag;
     }
 
-    volatile int* CLK_CYCLE_ADDR = (volatile int*)0x00004F00;
-    volatile int* INVALID_CLK_CYCLE_ADDR = (volatile int*)0x00004F04;
-    volatile int* RETIRED_INSTRUCTIONS_ADDR = (volatile int*)0x00004F08;
-    volatile int* CORRECT_PREDICTIONS_ADDR = (volatile int*)0x00004F0C;
-    volatile int* TOTAL_PREDICTIONS_ADDR = (volatile int*)0x00004F10;
+    volatile int* CLK_CYCLE_ADDR = (volatile int*)0x00007F00;
+    volatile int* INVALID_CLK_CYCLE_ADDR = (volatile int*)0x00007F04;
+    volatile int* RETIRED_INSTRUCTIONS_ADDR = (volatile int*)0x00007F08;
+    volatile int* CORRECT_PREDICTIONS_ADDR = (volatile int*)0x00007F0C;
+    volatile int* TOTAL_PREDICTIONS_ADDR = (volatile int*)0x00007F10;
     volatile int* RESULT_ADDR = (volatile int*)0x00006000;
 
     *CLK_CYCLE_ADDR = 0;
