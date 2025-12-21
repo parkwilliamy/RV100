@@ -5,7 +5,7 @@ int main() {
     volatile int* RETIRED_INSTRUCTIONS_ADDR = (int*)0x00004F08;
     volatile int* CORRECT_PREDICTIONS_ADDR = (int*)0x00004F0C;
     volatile int* TOTAL_PREDICTIONS_ADDR = (int*)0x00004F10;
-    volatile unsigned char* RESULT_ADDR = (unsigned char*)0x00006000;
+    volatile unsigned char* RESULT_ADDR = (unsigned char*)0x6000;
 
     RESULT_ADDR[0] = 1;
     RESULT_ADDR[1] = 2;
