@@ -1,16 +1,16 @@
-int fib(int n) {
-
-    if (n == 0 || n == 1) return n;
-    else return fib(n-1) + fib(n-2);
-
-}
-
 int main() {
 
-    int x = fib(15);
-    *(volatile int*)0x5000 = x;
+    volatile int* A = (volatile int*)0x5000;
+    volatile int* RESULT_ADDR = (volatile int*)0x6000;
+    int idx = 0;
 
+    for (int i=0; i < 256; i++) A[i] = i;
 
+    for (int i=0; i < 512; i++) {
+        idx = i & 255;
+        RESULT_ADDR[idx] = A[idx] + i;
+    }
+    /*
     volatile int* CLK_CYCLE_ADDR = (volatile int*)0x00007000;
     volatile int* INVALID_CLK_CYCLE_ADDR = (volatile int*)0x00007004;
     volatile int* RETIRED_INSTRUCTIONS_ADDR = (volatile int*)0x00007008;
@@ -22,8 +22,8 @@ int main() {
     *RETIRED_INSTRUCTIONS_ADDR = 0;
     *CORRECT_PREDICTIONS_ADDR = 0;
     *TOTAL_PREDICTIONS_ADDR = 0;
+    */
 
-    while (1);
+    while(1);
 
 }
-
