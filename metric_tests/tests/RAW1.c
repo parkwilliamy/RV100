@@ -4,7 +4,7 @@ int main() {
 
     a = 20;
     b = a ^ 1;
-    /*
+    
     c = 1;
     d = c+2;
 
@@ -20,7 +20,7 @@ int main() {
     RESULT_ADDR[1] = d;
     RESULT_ADDR[2] = f;
     RESULT_ADDR[3] = h;
-    */
+    
     while(1);
 
 }
