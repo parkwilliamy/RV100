@@ -29,7 +29,7 @@ int main() {
     volatile int* INVALID_CLK_CYCLE_ADDR = (volatile int*)0x00007004;
     volatile int* RETIRED_INSTRUCTIONS_ADDR = (volatile int*)0x00007008;
     volatile int* CORRECT_PREDICTIONS_ADDR = (volatile int*)0x0000700C;
-    volatile int* TOTAL_PREDICTIONS_ADDR = (volatile int*)0x00007014;
+    volatile int* TOTAL_PREDICTIONS_ADDR = (volatile int*)0x00007010;
     
     *CLK_CYCLE_ADDR = 0;
     *INVALID_CLK_CYCLE_ADDR = 0;
