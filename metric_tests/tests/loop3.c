@@ -1,4 +1,9 @@
-static inline int mod(int a, int b);
+static inline int mod(int a, int b) {
+
+    while (a >= b) a-=b;
+    return a;
+
+}
 
 int main() {
 
@@ -16,9 +21,3 @@ int main() {
 
 }
 
-static inline int mod(int a, int b) {
-
-    while (a >= b) a-=b;
-    return a;
-
-}
