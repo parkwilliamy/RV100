@@ -11,11 +11,11 @@ int main() {
     *RESULT_ADDR = count;
 
     
-    volatile int* CLK_CYCLE_ADDR = (volatile int*)0x00007000;
-    volatile int* INVALID_CLK_CYCLE_ADDR = (volatile int*)0x00007004;
-    volatile int* RETIRED_INSTRUCTIONS_ADDR = (volatile int*)0x00007008;
-    volatile int* CORRECT_PREDICTIONS_ADDR = (volatile int*)0x0000700C;
-    volatile int* TOTAL_PREDICTIONS_ADDR = (volatile int*)0x00007010;
+    volatile int* CLK_CYCLE_ADDR = (volatile int*)0x00005000;
+    volatile int* INVALID_CLK_CYCLE_ADDR = (volatile int*)0x00005004;
+    volatile int* RETIRED_INSTRUCTIONS_ADDR = (volatile int*)0x00005008;
+    volatile int* CORRECT_PREDICTIONS_ADDR = (volatile int*)0x0000500C;
+    volatile int* TOTAL_PREDICTIONS_ADDR = (volatile int*)0x00005010;
     
     *CLK_CYCLE_ADDR = 0;
     *INVALID_CLK_CYCLE_ADDR = 0;
