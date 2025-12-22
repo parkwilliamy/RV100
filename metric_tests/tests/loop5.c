@@ -11,7 +11,7 @@ int main() {
     volatile uint32_t *OUT = (uint32_t*)0x6000;
 
     uint32_t seed = 0x12345678;
-    uint32_t iters = 100000;
+    uint32_t iters = 1000;
     uint32_t a_taken = 0, b_taken = 0;
 
     for (uint32_t i = 0; i < iters; i++) {

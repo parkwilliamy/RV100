@@ -1,6 +1,6 @@
 int main() {
 
-    volatile int* A = (volatile int*)0x5000;
+    volatile int* A = (volatile int*)0x7000;
     volatile int* RESULT_ADDR = (volatile int*)0x6000;
     int idx = 0;
 

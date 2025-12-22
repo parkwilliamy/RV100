@@ -8,7 +8,7 @@ int fib(int n) {
 int main() {
 
     int x = fib(15);
-    *(volatile int*)0x5000 = x;
+    *(volatile int*)0x6000 = x;
 
 
     volatile int* CLK_CYCLE_ADDR = (volatile int*)0x00005000;
