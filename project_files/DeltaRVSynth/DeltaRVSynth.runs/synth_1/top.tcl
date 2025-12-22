@@ -56,8 +56,10 @@ if {$::dispatch::connected} {
 }
 
 OPTRACE "synth_1" START { ROLLUP_AUTO }
+set_param tcl.collectionResultDisplayLimit 0
 set_param general.usePosixSpawnForFork 1
 set_param chipscope.maxJobs 2
+set_param xicom.use_bs_reader 1
 set_msg_config  -id {Synth 8-7129}  -string {{WARNING: [Synth 8-7129] Port ID_ValidReg[0] in module StallUnit is either unconnected or has no load}}  -suppress 
 set_msg_config  -id {Synth 8-7129}  -suppress 
 OPTRACE "Creating in-memory project" START { }

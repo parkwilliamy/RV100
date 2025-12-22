@@ -114,6 +114,7 @@ module MemAccess (
 
                         word_idx <= (word_idx+1)%4; // used to loop between 0-3 and select parts of data word to transmit
                         if (addrb != ADDR_HIGH+4) TX_data <= dob[7+8*word_idx -: 8];
+                        else TX_enable <= 0;
                         if (word_idx == 3) addrb <= addrb+4;
 
                     end
@@ -135,8 +136,8 @@ module MemAccess (
 
             IDLE: begin
 
-                if (RX_data == 8'h0F) next_state = WRITE_1;
-                else if (RX_data == 8'hFF) next_state = READ_1;
+                if (RX_data == 8'h0F && byte_done) next_state = WRITE_1;
+                else if (RX_data == 8'hFF && byte_done) next_state = READ_1;
                 else next_state = IDLE;
 
             end
