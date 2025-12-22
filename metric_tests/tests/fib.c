@@ -5,6 +5,8 @@ int main() {
     int x = fib(15);
     *(volatile int*)0x5000 = x;
 
+    while (1);
+
 }
 
 

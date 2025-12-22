@@ -3,7 +3,7 @@ int main() {
     int count = 0;
     int flag = 0;
     
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < 100000; i++) {
         if (flag == 1) count++;
         flag = !flag;
     }
