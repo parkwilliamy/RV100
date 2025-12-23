@@ -6,9 +6,14 @@
 - Utilizes a 5-stage pipeline with global branch prediction
 - Designed a 2-way set associative branch target buffer to eliminate penalties for taken branch instructions
 
-## Architecture 
+## R500 Architecture
 
-## UART Transaction Format
+## System Architecture
+
+<img width="2701" height="1418" alt="R100_Top_Architecture_Diagram" src="https://github.com/user-attachments/assets/462933a8-ec7d-4077-9552-69433ccedb0a" />
+
+
+## Memory Interface
 
 
 ## Verification
