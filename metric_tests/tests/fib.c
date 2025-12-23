@@ -10,7 +10,6 @@ int main() {
     int x = fib(15);
     *(volatile int*)0x6000 = x;
 
-
     volatile int* CLK_CYCLE_ADDR = (volatile int*)0x00005000;
     volatile int* INVALID_CLK_CYCLE_ADDR = (volatile int*)0x00005004;
     volatile int* RETIRED_INSTRUCTIONS_ADDR = (volatile int*)0x00005008;
