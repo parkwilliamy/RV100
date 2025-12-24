@@ -4,8 +4,8 @@
 - R500 is 100% compliant with the RV32I ISA based on the official compliance test suite (see below for more details)
 - R500 has an average CPI of 1.23*, branch predictor accuracy of 96.5%**, and a throughput of 46.3 million instructions per second*
 - Implemented on the Xilinx Artix-7 FPGA with 20KB of instruction memory and 12KB of data memory
-- Utilizes a 5-stage pipeline with global branch prediction
-- Designed a 2-way set associative branch target buffer to eliminate penalties for taken branch instructions
+- Utilizes a 5-stage pipeline with data forwarding, stalling, flushing, and global branch prediction
+- Designed a 2-way set associative branch target buffer to eliminate penalties for correctly predicted branch instructions
 
 **Average CPI and throughput were calculated on the average results of loop1.c, loop2.c, loop3.c, loop4.c, loop5.c, fib.c, and mem2.c*
 
@@ -21,12 +21,46 @@
   <img width="610" height="500" alt="R500_Architecture" src="https://github.com/user-attachments/assets/cc8a34cd-d99a-4182-861c-e690406e79ee" />
 </p>
 
+### Hazard Detection
+R500's Forward Unit eliminates the following data hazards:
+
+1) MEM to EX
+2) WB to EX
+3) WB to MEM (only for load-store cases)
+   
+- The Forward Unit prioritizes the newest data that comes in to a register when there are conflicts in situations like the following:
+
+```
+addi x1, x2, 5  # x1 = x2 + 5
+addi x1, x1, 3  # x1 = x1 + 3
+addi x1, x1, 4  # x1 = x1 + 4 <--- In this case, this instruction must prioritize the data forwarded from the instruction immediately before it, since there is a conflict with the first instruction's x1 data as well
+```
+
+- The Stall Unit handles load-use hazards by inserting a single cycle NOP instruction into the pipeline 
+
+### Branch Prediction
+The R500's global branch predictor uses gshare indexing, which uses both the PC and global prediction history to map a branch instruction to a prediction
+
+- The Branch History Table (BHT) stores 2-bit predictions for up to 256 unique instructions
+- The Branch Target Buffer (BTB) stores the computed target addresses to jump to for up to 32 different instructions
+- Together, the BHT and BTB are accessed in the IF stage to determine the next PC as early as possible
+- The Branch Resolution Unit (BRU) is later used in the EX stage to determine if the prediction was indeed correct or not; incorrect predictions result in pipeline flushes which are asserted by the Fetch Unit
+
 ## System Architecture
 <p align="center">
   <img width="10892" height="5760" alt="image" src="https://github.com/user-attachments/assets/add98f81-4c2a-4165-946f-8fa9f47eb2f7" />
 </p>
 
+### UART
+- The UART module handles transmission and reception of data between RAM and the Host PC
+- On the RX line, the received data bits are packed into one data byte that is sent to the MemAccess module
+- On the TX line, the module unpacks a byte of data into bits to send over this line
+- In other words, RX packs bits into a byte while TX unpacks a byte into bits
 
+### MemAccess
+- The MemAccess module directly interacts with RAM 
+- Packs received bytes into message frames, which then correspond to a read or write operation
+- Unpacks data words into bytes to be sent over UART (for read operations)
 
 ## Memory Interface
 - Memory is in the form of True Dual-Port BRAM
