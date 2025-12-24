@@ -48,7 +48,7 @@ The R500's global branch predictor uses gshare indexing, which uses both the PC 
 
 ## System Architecture
 <p align="center">
-  <img width="10892" height="5760" alt="image" src="https://github.com/user-attachments/assets/add98f81-4c2a-4165-946f-8fa9f47eb2f7" />
+  <img width="2840" height="1610" alt="R500_Top_Architecture drawio" src="https://github.com/user-attachments/assets/7db3bd53-78de-4f4d-ad15-6cf882c1f1e4" />
 </p>
 
 ### UART
