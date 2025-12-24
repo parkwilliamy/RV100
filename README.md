@@ -18,7 +18,7 @@
 
 ## R500 Architecture
 <p align="center">
-  <img width="610" height="500" alt="R500_Architecture" src="https://github.com/user-attachments/assets/cc8a34cd-d99a-4182-861c-e690406e79ee" />
+  <img width="660" height="570" alt="R500_Architecture (4)" src="https://github.com/user-attachments/assets/cf5a9d19-2326-42c5-bff0-6d15808d3878" />
 </p>
 
 ### Hazard Detection
