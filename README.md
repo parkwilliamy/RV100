@@ -44,7 +44,7 @@ The R500's global branch predictor uses gshare indexing, which uses both the PC 
 - The Branch History Table (BHT) stores 2-bit predictions for up to 256 unique instructions
 - The Branch Target Buffer (BTB) stores the computed target addresses to jump to for up to 32 different instructions
 - Together, the BHT and BTB are accessed in the IF stage to determine the next PC as early as possible
-- The Branch Resolution Unit (BRU) is later used in the EX stage to determine if the prediction was indeed correct or not; incorrect predictions result in pipeline flushes which are asserted by the Fetch Unit
+- The Branch Resolution Unit (BRU) is later used in the EX stage to determine if the prediction was correct or not; incorrect predictions result in pipeline flushes which are asserted by the Fetch Unit
 
 ## System Architecture
 <p align="center">
